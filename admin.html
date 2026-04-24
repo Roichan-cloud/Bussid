@@ -91,7 +91,7 @@
     .add-promo-btn:hover{transform:translateY(-1px);}
     .promo-form{padding:16px 20px;border-bottom:2px solid var(--border);background:rgba(0,200,83,.02);display:none;}
     .promo-form.open{display:block;}
-    .promo-form-grid{display:grid;grid-template-columns:1fr 1fr 1fr 1fr auto;gap:10px;align-items:end;}
+    .promo-form-grid{display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr 1fr auto;gap:10px;align-items:end;}
     @media(max-width:700px){.promo-form-grid{grid-template-columns:1fr 1fr;}}
     .promo-form-group{display:flex;flex-direction:column;gap:5px;}
     .promo-form-group label{font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;}
@@ -196,6 +196,14 @@
           <div class="promo-form-group">
             <label>Nilai Diskon</label>
             <input type="number" id="inp-nilai" placeholder="Contoh: 10" min="1"/>
+          </div>
+          <div class="promo-form-group">
+            <label>Min Pembelian (Rp)</label>
+            <input type="number" id="inp-min" placeholder="0 = tidak ada" min="0"/>
+          </div>
+          <div class="promo-form-group">
+            <label>Max Pembelian (Rp)</label>
+            <input type="number" id="inp-max" placeholder="0 = tidak ada" min="0"/>
           </div>
           <div class="promo-form-group">
             <label>Status</label>
@@ -329,9 +337,9 @@
       return '<div class="order-item">'+
         '<div class="order-num">'+(i+1)+'</div>'+
         '<div class="order-info">'+
-          '<div class="order-main"><span class="order-name">'+(order.username||'—')+'</span><span class="order-paket">'+(order.paketLabel||'')+'</span></div>'+
-          '<div class="order-detail">📧 Email: <strong>'+(order.username||'—')+'</strong></div>'+
-          '<div class="order-detail">🎮 ID Player: <strong>'+order.playerId+'</strong> · 📦 '+(order.paket||'—')+'</div>'+
+          '<div class="order-main"><span class="order-name">'+(order.email||'—')+'</span><span class="order-paket">'+(order.paketLabel||'')+'</span></div>'+
+          '<div class="order-detail">📧 Email: <strong>'+(order.email||'—')+'</strong></div>'+
+          '<div class="order-detail">🎮 ID Player: <strong>'+(order.idPlayer||'—')+'</strong> · 📦 '+(order.paket||'—')+'</div>'+
           '<div class="order-detail">🕐 '+time+'</div>'+
           '<div class="order-trx">🔖 ID Transaksi: <strong>'+(order.idTransaksi||'—')+'</strong>'+(order.promoCode?' · 🎁 Promo: '+order.promoCode:'')+'</div>'+
         '</div>'+
@@ -403,12 +411,15 @@
         el.innerHTML = snap.docs.map(function(doc) {
           var d = doc.data();
           var discLabel = d.tipe === 'flat' ? 'Rp' + d.nilai.toLocaleString('id-ID') + ' off' : d.nilai + '% off';
+          var minMax = '';
+          if (d.minHarga > 0) minMax += ' · Min: Rp' + d.minHarga.toLocaleString('id-ID');
+          if (d.maxHarga > 0) minMax += ' · Max: Rp' + d.maxHarga.toLocaleString('id-ID');
           var isExp = d.isExpired === true;
           return '<div class="promo-row-item">'+
             '<div class="promo-code-badge">'+d.kode+'</div>'+
             '<div class="promo-info">'+
               '<div class="promo-disc">'+discLabel+'</div>'+
-              '<div class="promo-type">'+(d.tipe==='flat'?'Nominal tetap':d.tipe==='gratis'?'Gratis 100%':'Persentase')+'</div>'+
+              '<div class="promo-type">'+(d.tipe==='flat'?'Nominal tetap':d.tipe==='gratis'?'Gratis 100%':'Persentase')+minMax+'</div>'+
             '</div>'+
             '<div class="promo-expired-badge '+(isExp?'badge-expired':'badge-aktif')+'">'+(isExp?'❌ Expired':'✅ Aktif')+'</div>'+
             '<div class="promo-actions">'+
@@ -444,10 +455,13 @@
     var tipe = document.getElementById('inp-tipe').value;
     var nilai = parseFloat(document.getElementById('inp-nilai').value);
     var isExpired = document.getElementById('inp-expired').value === 'true';
+    var minHarga = parseFloat(document.getElementById('inp-min').value) || 0;
+    var maxHarga = parseFloat(document.getElementById('inp-max').value) || 0;
 
     if (!kode) { showToast('⚠️ Isi kode promo dulu!'); return; }
     if (tipe !== 'gratis' && (!nilai || nilai <= 0)) { showToast('⚠️ Isi nilai diskon!'); return; }
     if (tipe === 'persen' && nilai > 100) { showToast('⚠️ Diskon persen max 100!'); return; }
+    if (maxHarga > 0 && minHarga > maxHarga) { showToast('⚠️ Min tidak boleh lebih dari Max!'); return; }
     if (tipe === 'gratis') nilai = 100;
 
     var btn = document.getElementById('btn-save-promo');
@@ -458,6 +472,8 @@
       tipe: tipe,
       nilai: nilai,
       isExpired: isExpired,
+      minHarga: minHarga,
+      maxHarga: maxHarga,
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
     }).then(function() {
       showToast('✅ Kode promo berhasil disimpan!');
@@ -465,6 +481,8 @@
       document.getElementById('inp-nilai').value = '';
       document.getElementById('inp-tipe').value = 'persen';
       document.getElementById('inp-expired').value = 'false';
+      document.getElementById('inp-min').value = '';
+      document.getElementById('inp-max').value = '';
       document.getElementById('inp-nilai').disabled = false;
       loadPromos();
     }).catch(function(e) {
