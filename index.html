@@ -5,11 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Buahlilsid Store — Top Up BUSSID</title>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
-
-  <!-- Firebase Compat — dimuat di HEAD agar siap sebelum body -->
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
-
   <style>
     :root{--lime:#39FF14;--lime2:#00E676;--green:#00C853;--darkgreen:#00953D;--bg:#E8FFF0;--text:#0A3D1F;--muted:#4A8C5C;--border:rgba(0,200,83,.25);--shadow:0 4px 24px rgba(0,200,83,.15);}
     *{margin:0;padding:0;box-sizing:border-box;}
@@ -20,10 +17,10 @@
     .logo span{background:linear-gradient(135deg,var(--green),var(--lime2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
     .nav-badge{background:linear-gradient(135deg,var(--green),var(--lime2));color:#fff;font-weight:800;font-size:11px;padding:5px 14px;border-radius:99px;}
     .hero{position:relative;z-index:1;padding:40px 24px 28px;text-align:center;}
-    .hero-tag{display:inline-block;background:linear-gradient(135deg,var(--lime2),var(--green));color:#fff;font-weight:800;font-size:12px;padding:6px 18px;border-radius:99px;margin-bottom:16px;animation:fadeUp .5s ease both;}
-    .hero h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(42px,9vw,80px);line-height:1;letter-spacing:3px;color:var(--text);animation:fadeUp .5s ease .1s both;}
+    .hero-tag{display:inline-block;background:linear-gradient(135deg,var(--lime2),var(--green));color:#fff;font-weight:800;font-size:12px;padding:6px 18px;border-radius:99px;margin-bottom:16px;}
+    .hero h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(42px,9vw,80px);line-height:1;letter-spacing:3px;color:var(--text);}
     .hero h1 .accent{background:linear-gradient(135deg,var(--green),var(--lime));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
-    .hero p{margin-top:10px;color:var(--muted);font-size:15px;font-weight:600;animation:fadeUp .5s ease .2s both;}
+    .hero p{margin-top:10px;color:var(--muted);font-size:15px;font-weight:600;}
     .container{position:relative;z-index:1;max-width:680px;margin:0 auto;padding:0 16px 60px;}
     .steps{display:flex;margin-bottom:24px;border:2px solid var(--border);border-radius:14px;overflow:hidden;background:#fff;box-shadow:var(--shadow);}
     .step{flex:1;padding:12px 8px;display:flex;align-items:center;justify-content:center;gap:8px;background:#fff;border-right:1px solid var(--border);transition:background .2s;}
@@ -42,9 +39,9 @@
     @media(max-width:500px){.form-row{grid-template-columns:1fr;}}
     .form-group{display:flex;flex-direction:column;gap:6px;}
     .form-group label{font-size:12px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;}
-    input[type=text],input[type=password],input[type=email],.promo-input{background:var(--bg);border:2px solid var(--border);border-radius:10px;padding:12px 14px;color:var(--text);font-family:'Nunito',sans-serif;font-size:15px;font-weight:600;outline:none;transition:border-color .2s,box-shadow .2s;width:100%;}
-    input:focus,.promo-input:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(0,200,83,.12);}
-    input::placeholder,.promo-input::placeholder{color:#B2DFDB;font-weight:600;}
+    .form-group input{background:var(--bg);border:2px solid var(--border);border-radius:10px;padding:12px 14px;color:var(--text);font-family:'Nunito',sans-serif;font-size:15px;font-weight:600;outline:none;transition:border-color .2s,box-shadow .2s;width:100%;}
+    .form-group input:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(0,200,83,.12);}
+    .form-group input::placeholder{color:#B2DFDB;font-weight:600;}
     .paket-label{display:flex;align-items:center;gap:8px;font-weight:900;font-size:13px;color:var(--darkgreen);text-transform:uppercase;padding:9px 13px;background:linear-gradient(135deg,rgba(0,200,83,.1),rgba(57,255,20,.05));border-radius:10px;margin-bottom:10px;border:1.5px solid var(--border);}
     .nominal-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;}
     @media(max-width:440px){.nominal-grid{grid-template-columns:repeat(2,1fr);}}
@@ -56,7 +53,9 @@
     .nominal-sub{font-size:10px;color:var(--muted);font-weight:700;margin:2px 0 6px;}
     .nominal-price{font-weight:900;font-size:15px;color:var(--text);}
     .promo-row{display:flex;gap:8px;}
-    .promo-input{flex:1;width:auto;text-transform:uppercase;letter-spacing:1px;}
+    .promo-input{flex:1;background:var(--bg);border:2px solid var(--border);border-radius:10px;padding:12px 14px;color:var(--text);font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;outline:none;text-transform:uppercase;letter-spacing:1px;transition:border-color .2s;}
+    .promo-input:focus{border-color:var(--green);}
+    .promo-input::placeholder{text-transform:none;letter-spacing:0;color:#B2DFDB;font-weight:600;}
     .promo-btn{background:linear-gradient(135deg,var(--green),var(--lime2));border:none;color:#fff;font-family:'Nunito',sans-serif;font-weight:900;font-size:13px;padding:12px 18px;border-radius:10px;cursor:pointer;transition:all .2s;white-space:nowrap;}
     .promo-btn:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(0,200,83,.3);}
     .promo-msg{font-size:12px;font-weight:700;margin-top:8px;display:none;}
@@ -138,6 +137,7 @@
     <div class="tab" id="tab-riwayat">📋 Riwayat</div>
   </div>
 
+  <!-- TOP UP PANEL -->
   <div class="panel active" id="panel-topup">
     <div class="steps">
       <div class="step active" id="step1-ind"><div class="step-num">1</div><div class="step-label">Akun</div></div>
@@ -145,17 +145,25 @@
       <div class="step" id="step3-ind"><div class="step-num">3</div><div class="step-label">Bayar</div></div>
     </div>
 
+    <!-- STEP 1 -->
     <div id="sec1">
       <div class="card">
         <div class="card-title">Data Akun BUSSID</div>
         <div class="form-row">
-          <div class="form-group"><label>Email Bussid</label><input type="email" id="username" placeholder="Contoh: nama@gmail.com" maxlength="100"/></div>
-          <div class="form-group"><label>ID Player</label><input type="text" id="player-id" placeholder="Contoh: 123456789" maxlength="20"/></div>
+          <div class="form-group">
+            <label>Email Bussid</label>
+            <input type="email" id="inp-email" placeholder="Contoh: nama@gmail.com" maxlength="100"/>
+          </div>
+          <div class="form-group">
+            <label>ID Player</label>
+            <input type="text" id="inp-idplayer" placeholder="Contoh: 123456789" maxlength="30"/>
+          </div>
         </div>
       </div>
       <button class="btn-primary" id="btn-step2">LANJUT →</button>
     </div>
 
+    <!-- STEP 2 -->
     <div id="sec2" style="display:none">
       <div class="card">
         <div class="card-title">Pilih Paket</div>
@@ -177,6 +185,7 @@
           <div class="nominal-item" data-idx="7"><div class="nominal-uang">2 M</div><div class="nominal-sub">Uang Bussid</div><div class="nominal-price">Rp60.000</div></div>
         </div>
       </div>
+
       <div class="card">
         <div class="card-title">Kode Promo</div>
         <div class="promo-row">
@@ -188,6 +197,7 @@
       <button class="btn-primary" id="btn-step3">LANJUT →</button>
     </div>
 
+    <!-- STEP 3 -->
     <div id="sec3" style="display:none">
       <div class="qris-box">
         <div class="qris-img">📱</div>
@@ -195,41 +205,47 @@
         <div class="qris-sub">Bayar sesuai total, lalu masukkan ID transaksi</div>
       </div>
       <div class="trx-note">💡 Setelah bayar, salin <strong>ID Transaksi / Nomor Referensi</strong> dari bukti bayar, lalu masukkan di bawah.</div>
+
       <div class="card">
         <div class="card-title">Ringkasan Pesanan</div>
-        <div class="summary-row"><span class="label">Email Bussid</span><span class="val" id="sum-user">—</span></div>
-        <div class="summary-row"><span class="label">ID Player</span><span class="val" id="sum-id">—</span></div>
+        <div class="summary-row"><span class="label">Email Bussid</span><span class="val" id="sum-email">—</span></div>
+        <div class="summary-row"><span class="label">ID Player</span><span class="val" id="sum-idplayer">—</span></div>
         <div class="summary-row"><span class="label">Paket</span><span class="val" id="sum-paket">—</span></div>
         <div class="summary-row" id="sum-promo-row" style="display:none"><span class="label">Diskon</span><span class="val discount-val" id="sum-discount">—</span></div>
         <div class="summary-row total"><span class="label">Total</span><span class="val" id="sum-total">—</span></div>
       </div>
+
       <div class="card">
         <div class="card-title">ID Transaksi</div>
         <div class="form-group">
           <label>Nomor Referensi / ID Transaksi QRIS</label>
-          <input type="text" id="trx-id" placeholder="Contoh: TRX1234567890" maxlength="50"/>
+          <input type="text" id="inp-trxid" placeholder="Contoh: TRX1234567890" maxlength="50"/>
         </div>
       </div>
       <button class="btn-primary" id="btn-submit">🚌 KONFIRMASI PESANAN</button>
     </div>
   </div>
 
+  <!-- RIWAYAT PANEL -->
   <div class="panel" id="panel-riwayat">
     <div class="card">
       <div class="card-title">Cari Riwayat Transaksi</div>
       <div class="form-group">
         <label>Email Bussid</label>
-        <input type="email" id="cari-id" placeholder="Masukkan email Bussid kamu..."/>
+        <input type="email" id="inp-cari-email" placeholder="Masukkan email Bussid kamu..."/>
       </div>
       <button class="btn-primary" id="btn-cari" style="margin-top:12px">🔍 CARI RIWAYAT</button>
     </div>
     <div class="card">
       <div class="card-title">Hasil</div>
-      <div id="riwayat-list"><div class="empty-state"><div>🔍</div><p>Masukkan Email Bussid untuk melihat riwayat.</p></div></div>
+      <div id="riwayat-list">
+        <div class="empty-state"><div>🔍</div><p>Masukkan Email Bussid untuk melihat riwayat.</p></div>
+      </div>
     </div>
   </div>
 </div>
 
+<!-- MODAL -->
 <div class="modal-overlay" id="modal">
   <div class="modal">
     <div class="modal-icon">✅</div>
@@ -243,7 +259,6 @@
 <footer>&copy; 2025 <span>Buahlilsid Store</span> — Top Up BUSSID Terpercaya 🚌</footer>
 
 <script>
-  // Inisialisasi Firebase
   firebase.initializeApp({
     apiKey: "AIzaSyDtH8OSCQNk9DxZ6aGyG2ioUif7xnIfqNA",
     authDomain: "buahlilsid-store.firebaseapp.com",
@@ -264,18 +279,16 @@
     {uang:'1.600.000.000',label:'1,6 M',harga:50000},
     {uang:'2.000.000.000',label:'2 M',harga:60000}
   ];
-  var promoCodes = {}; // Dimuat dari Firebase Firestore
+
   var selectedNominal = null;
   var appliedPromo = null;
 
-  // Semua event listener dipasang setelah DOM siap
   document.addEventListener('DOMContentLoaded', function() {
-
-    // Tab
+    // Tab switch
     document.getElementById('tab-topup').addEventListener('click', function() { switchTab('topup'); });
     document.getElementById('tab-riwayat').addEventListener('click', function() { switchTab('riwayat'); });
 
-    // Nominal pilih
+    // Nominal select
     document.querySelectorAll('.nominal-item').forEach(function(el) {
       el.addEventListener('click', function() {
         document.querySelectorAll('.nominal-item').forEach(function(e){ e.classList.remove('selected'); });
@@ -284,26 +297,33 @@
       });
     });
 
-    // Tombol steps
+    // Buttons
     document.getElementById('btn-step2').addEventListener('click', goStep2);
     document.getElementById('btn-step3').addEventListener('click', goStep3);
     document.getElementById('btn-promo').addEventListener('click', applyPromo);
     document.getElementById('btn-submit').addEventListener('click', submitOrder);
     document.getElementById('btn-modal-close').addEventListener('click', closeModal);
     document.getElementById('btn-cari').addEventListener('click', cariRiwayat);
+
+    // Uppercase promo input
+    document.getElementById('promo-input').addEventListener('input', function() {
+      this.value = this.value.toUpperCase();
+    });
   });
 
   function goStep2() {
-    var id = document.getElementById('player-id').value.trim();
-    var user = document.getElementById('username').value.trim();
-    if (!id || !user) { showToast('⚠️ Isi Email Bussid dan ID Player dulu!'); return; }
+    var email = document.getElementById('inp-email').value.trim();
+    var idplayer = document.getElementById('inp-idplayer').value.trim();
+    if (!email || !idplayer) { showToast('⚠️ Isi Email Bussid dan ID Player dulu!'); return; }
     setStep(2);
   }
 
   function goStep3() {
     if (!selectedNominal) { showToast('⚠️ Pilih paket dulu!'); return; }
-    document.getElementById('sum-user').textContent = document.getElementById('username').value.trim();
-    document.getElementById('sum-id').textContent = document.getElementById('player-id').value.trim();
+    var email = document.getElementById('inp-email').value.trim();
+    var idplayer = document.getElementById('inp-idplayer').value.trim();
+    document.getElementById('sum-email').textContent = email;
+    document.getElementById('sum-idplayer').textContent = idplayer;
     document.getElementById('sum-paket').textContent = selectedNominal.uang + ' Uang Bussid';
     updateTotal();
     setStep(3);
@@ -330,7 +350,9 @@
           msg.className = 'promo-msg error';
           return;
         }
-        var discLabel = d.tipe === 'flat' ? 'Potongan Rp' + d.nilai.toLocaleString('id-ID') : 'Diskon ' + d.nilai + '%';
+        var discLabel = d.tipe === 'flat'
+          ? 'Potongan Rp' + d.nilai.toLocaleString('id-ID')
+          : 'Diskon ' + d.nilai + '%';
         appliedPromo = {code: code, disc: d.nilai, flat: d.tipe === 'flat', label: discLabel};
         msg.textContent = '✅ Promo berhasil! ' + discLabel;
         msg.className = 'promo-msg success';
@@ -364,32 +386,36 @@
   }
 
   function submitOrder() {
-    var trxId = document.getElementById('trx-id').value.trim();
+    var trxId = document.getElementById('inp-trxid').value.trim();
     if (!trxId) { showToast('⚠️ Masukkan ID Transaksi dulu!'); return; }
     var btn = document.getElementById('btn-submit');
     btn.disabled = true; btn.textContent = 'MEMPROSES...';
-    var id = document.getElementById('player-id').value.trim();
-    var user = document.getElementById('username').value.trim();
+    var email = document.getElementById('inp-email').value.trim();
+    var idplayer = document.getElementById('inp-idplayer').value.trim();
     var total = calcTotal();
     db.collection('orders').add({
-      playerId: id, username: user,
+      email: email,
+      idPlayer: idplayer,
       paket: selectedNominal.uang + ' Uang Bussid',
       paketLabel: selectedNominal.label,
-      hargaAsli: selectedNominal.harga, totalBayar: total,
+      hargaAsli: selectedNominal.harga,
+      totalBayar: total,
       promoCode: appliedPromo ? appliedPromo.code : null,
-      idTransaksi: trxId, status: 'menunggu',
+      idTransaksi: trxId,
+      status: 'menunggu',
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
     }).then(function() {
       document.getElementById('modal-detail').innerHTML =
-        '<div class="row"><span class="k">Email Bussid</span><span class="v">'+user+'</span></div>'+
-        '<div class="row"><span class="k">ID Player</span><span class="v">'+id+'</span></div>'+
-        '<div class="row"><span class="k">Paket</span><span class="v">'+selectedNominal.uang+' Uang Bussid</span></div>'+
-        '<div class="row"><span class="k">ID Transaksi</span><span class="v">'+trxId+'</span></div>'+
-        '<div class="row"><span class="k">Total</span><span class="v" style="color:var(--green)">Rp'+total.toLocaleString('id-ID')+'</span></div>'+
+        '<div class="row"><span class="k">Email Bussid</span><span class="v">' + email + '</span></div>' +
+        '<div class="row"><span class="k">ID Player</span><span class="v">' + idplayer + '</span></div>' +
+        '<div class="row"><span class="k">Paket</span><span class="v">' + selectedNominal.uang + ' Uang Bussid</span></div>' +
+        '<div class="row"><span class="k">ID Transaksi</span><span class="v">' + trxId + '</span></div>' +
+        '<div class="row"><span class="k">Total</span><span class="v" style="color:var(--green)">Rp' + total.toLocaleString('id-ID') + '</span></div>' +
         '<div class="row"><span class="k">Status</span><span class="v" style="color:#F57F17">⏳ Menunggu Konfirmasi</span></div>';
       document.getElementById('modal').classList.add('open');
     }).catch(function(e) {
-      showToast('❌ Gagal mengirim. Coba lagi!'); console.error(e);
+      showToast('❌ Gagal mengirim. Coba lagi!');
+      console.error(e);
     }).finally(function() {
       btn.disabled = false; btn.textContent = '🚌 KONFIRMASI PESANAN';
     });
@@ -398,26 +424,44 @@
   function closeModal() {
     document.getElementById('modal').classList.remove('open');
     selectedNominal = null; appliedPromo = null;
-    ['player-id','username','trx-id','promo-input'].forEach(function(id){ document.getElementById(id).value = ''; });
+    document.getElementById('inp-email').value = '';
+    document.getElementById('inp-idplayer').value = '';
+    document.getElementById('inp-trxid').value = '';
+    document.getElementById('promo-input').value = '';
     document.getElementById('promo-msg').className = 'promo-msg';
     document.querySelectorAll('.nominal-item').forEach(function(e){ e.classList.remove('selected'); });
     setStep(1);
   }
 
   function cariRiwayat() {
-    var cariId = document.getElementById('cari-id').value.trim();
-    if (!cariId) { showToast('⚠️ Masukkan Email Bussid dulu!'); return; }
+    var email = document.getElementById('inp-cari-email').value.trim();
+    if (!email) { showToast('⚠️ Masukkan Email Bussid dulu!'); return; }
     var el = document.getElementById('riwayat-list');
     el.innerHTML = '<div class="loading"><div class="spinner"></div>Memuat...</div>';
-    db.collection('orders').where('username','==',cariId).orderBy('createdAt','desc').get()
+    db.collection('orders').where('email', '==', email).get()
       .then(function(snap) {
-        if (snap.empty) { el.innerHTML = '<div class="empty-state"><div>📭</div><p>Belum ada transaksi untuk ID ini.</p></div>'; return; }
-        el.innerHTML = snap.docs.map(function(doc) {
+        if (snap.empty) {
+          el.innerHTML = '<div class="empty-state"><div>📭</div><p>Belum ada transaksi untuk email ini.</p></div>';
+          return;
+        }
+        var docs = snap.docs.sort(function(a, b) {
+          var at = a.data().createdAt ? a.data().createdAt.seconds : 0;
+          var bt = b.data().createdAt ? b.data().createdAt.seconds : 0;
+          return bt - at;
+        });
+        el.innerHTML = docs.map(function(doc) {
           var d = doc.data();
-          var time = d.createdAt ? new Date(d.createdAt.seconds*1000).toLocaleString('id-ID') : 'Baru saja';
-          var sc = d.status==='dikonfirmasi'?'status-dikonfirmasi':d.status==='ditolak'?'status-ditolak':'status-menunggu';
-          var sl = d.status==='dikonfirmasi'?'✅ Dikonfirmasi':d.status==='ditolak'?'❌ Ditolak':'⏳ Menunggu';
-          return '<div class="riwayat-item"><div class="riwayat-icon">🚌</div><div class="riwayat-info"><div class="riwayat-name">'+d.paket+' · Rp'+(d.totalBayar||0).toLocaleString('id-ID')+'</div><div class="riwayat-detail">📧 '+d.username+' · 🎮 ID: '+d.playerId+' · '+time+'</div></div><div class="riwayat-status '+sc+'">'+sl+'</div></div>';
+          var time = d.createdAt ? new Date(d.createdAt.seconds * 1000).toLocaleString('id-ID') : 'Baru saja';
+          var sc = d.status === 'dikonfirmasi' ? 'status-dikonfirmasi' : d.status === 'ditolak' ? 'status-ditolak' : 'status-menunggu';
+          var sl = d.status === 'dikonfirmasi' ? '✅ Dikonfirmasi' : d.status === 'ditolak' ? '❌ Ditolak' : '⏳ Menunggu';
+          return '<div class="riwayat-item">' +
+            '<div class="riwayat-icon">🚌</div>' +
+            '<div class="riwayat-info">' +
+              '<div class="riwayat-name">' + (d.paket || '—') + ' · Rp' + (d.totalBayar || 0).toLocaleString('id-ID') + '</div>' +
+              '<div class="riwayat-detail">📧 ' + (d.email || '—') + ' · 🎮 ID: ' + (d.idPlayer || '—') + ' · ' + time + '</div>' +
+            '</div>' +
+            '<div class="riwayat-status ' + sc + '">' + sl + '</div>' +
+          '</div>';
         }).join('');
       }).catch(function(e) {
         el.innerHTML = '<div class="empty-state"><div>⚠️</div><p>Gagal memuat. Periksa koneksi kamu.</p></div>';
@@ -426,20 +470,20 @@
   }
 
   function setStep(n) {
-    document.getElementById('sec1').style.display = n===1?'block':'none';
-    document.getElementById('sec2').style.display = n===2?'block':'none';
-    document.getElementById('sec3').style.display = n===3?'block':'none';
-    for (var i=1;i<=3;i++) {
-      document.getElementById('step'+i+'-ind').className = 'step'+(i<n?' done':i===n?' active':'');
+    document.getElementById('sec1').style.display = n === 1 ? 'block' : 'none';
+    document.getElementById('sec2').style.display = n === 2 ? 'block' : 'none';
+    document.getElementById('sec3').style.display = n === 3 ? 'block' : 'none';
+    for (var i = 1; i <= 3; i++) {
+      document.getElementById('step' + i + '-ind').className = 'step' + (i < n ? ' done' : i === n ? ' active' : '');
     }
-    window.scrollTo({top:0,behavior:'smooth'});
+    window.scrollTo({top: 0, behavior: 'smooth'});
   }
 
   function switchTab(tab) {
     document.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('active'); });
     document.querySelectorAll('.panel').forEach(function(p){ p.classList.remove('active'); });
-    document.getElementById('tab-'+tab).classList.add('active');
-    document.getElementById('panel-'+tab).classList.add('active');
+    document.getElementById('tab-' + tab).classList.add('active');
+    document.getElementById('panel-' + tab).classList.add('active');
   }
 
   function showToast(msg) {
