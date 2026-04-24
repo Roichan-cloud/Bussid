@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Buahlilsid Store — Top Up BUSSID</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+
+  <!-- Firebase Compat — dimuat di HEAD agar siap sebelum body -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
+  <style>
+    :root{--lime:#39FF14;--lime2:#00E676;--green:#00C853;--darkgreen:#00953D;--bg:#E8FFF0;--text:#0A3D1F;--muted:#4A8C5C;--border:rgba(0,200,83,.25);--shadow:0 4px 24px rgba(0,200,83,.15);}
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;min-height:100vh;overflow-x:hidden;}
+    body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 10% 0%,rgba(57,255,20,.15) 0%,transparent 50%),radial-gradient(ellipse at 90% 100%,rgba(0,230,118,.12) 0%,transparent 50%);pointer-events:none;z-index:0;}
+    nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.95);backdrop-filter:blur(16px);border-bottom:2px solid var(--border);padding:12px 24px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 16px rgba(0,200,83,.1);}
+    .logo{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px;color:var(--darkgreen);}
+    .logo span{background:linear-gradient(135deg,var(--green),var(--lime2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+    .nav-badge{background:linear-gradient(135deg,var(--green),var(--lime2));color:#fff;font-weight:800;font-size:11px;padding:5px 14px;border-radius:99px;}
+    .hero{position:relative;z-index:1;padding:40px 24px 28px;text-align:center;}
+    .hero-tag{display:inline-block;background:linear-gradient(135deg,var(--lime2),var(--green));color:#fff;font-weight:800;font-size:12px;padding:6px 18px;border-radius:99px;margin-bottom:16px;animation:fadeUp .5s ease both;}
+    .hero h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(42px,9vw,80px);line-height:1;letter-spacing:3px;color:var(--text);animation:fadeUp .5s ease .1s both;}
+    .hero h1 .accent{background:linear-gradient(135deg,var(--green),var(--lime));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+    .hero p{margin-top:10px;color:var(--muted);font-size:15px;font-weight:600;animation:fadeUp .5s ease .2s both;}
+    .container{position:relative;z-index:1;max-width:680px;margin:0 auto;padding:0 16px 60px;}
+    .steps{display:flex;margin-bottom:24px;border:2px solid var(--border);border-radius:14px;overflow:hidden;background:#fff;box-shadow:var(--shadow);}
+    .step{flex:1;padding:12px 8px;display:flex;align-items:center;justify-content:center;gap:8px;background:#fff;border-right:1px solid var(--border);transition:background .2s;}
+    .step:last-child{border-right:none;}
+    .step.active{background:linear-gradient(135deg,rgba(0,200,83,.08),rgba(57,255,20,.05));}
+    .step.done{background:rgba(0,200,83,.05);}
+    .step-num{width:26px;height:26px;border-radius:50%;background:#E8F5E9;border:2px solid #C8E6C9;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:12px;color:var(--muted);flex-shrink:0;transition:all .2s;}
+    .step.active .step-num,.step.done .step-num{background:var(--green);border-color:var(--green);color:#fff;}
+    .step-label{font-weight:800;font-size:11px;color:#A5D6A7;}
+    .step.active .step-label{color:var(--green);}
+    .step.done .step-label{color:var(--darkgreen);}
+    .card{background:#fff;border:2px solid var(--border);border-radius:16px;padding:24px;margin-bottom:16px;box-shadow:var(--shadow);}
+    .card-title{font-weight:900;font-size:15px;color:var(--darkgreen);margin-bottom:18px;text-transform:uppercase;letter-spacing:.5px;display:flex;align-items:center;gap:8px;}
+    .card-title::before{content:'';width:4px;height:18px;background:linear-gradient(var(--green),var(--lime2));border-radius:2px;}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+    @media(max-width:500px){.form-row{grid-template-columns:1fr;}}
+    .form-group{display:flex;flex-direction:column;gap:6px;}
+    .form-group label{font-size:12px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;}
+    input[type=text],input[type=password],input[type=email],.promo-input{background:var(--bg);border:2px solid var(--border);border-radius:10px;padding:12px 14px;color:var(--text);font-family:'Nunito',sans-serif;font-size:15px;font-weight:600;outline:none;transition:border-color .2s,box-shadow .2s;width:100%;}
+    input:focus,.promo-input:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(0,200,83,.12);}
+    input::placeholder,.promo-input::placeholder{color:#B2DFDB;font-weight:600;}
+    .paket-label{display:flex;align-items:center;gap:8px;font-weight:900;font-size:13px;color:var(--darkgreen);text-transform:uppercase;padding:9px 13px;background:linear-gradient(135deg,rgba(0,200,83,.1),rgba(57,255,20,.05));border-radius:10px;margin-bottom:10px;border:1.5px solid var(--border);}
+    .nominal-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;}
+    @media(max-width:440px){.nominal-grid{grid-template-columns:repeat(2,1fr);}}
+    .nominal-item{background:var(--bg);border:2px solid var(--border);border-radius:12px;padding:14px 10px;cursor:pointer;transition:all .2s;text-align:center;position:relative;}
+    .nominal-item:hover{border-color:var(--green);transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,200,83,.15);}
+    .nominal-item.selected{border-color:var(--green);background:linear-gradient(135deg,rgba(0,200,83,.08),rgba(57,255,20,.04));box-shadow:0 4px 16px rgba(0,200,83,.2);}
+    .nominal-item.selected::after{content:'✓';position:absolute;top:6px;right:8px;color:var(--green);font-size:13px;font-weight:900;}
+    .nominal-uang{font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--green);line-height:1.2;}
+    .nominal-sub{font-size:10px;color:var(--muted);font-weight:700;margin:2px 0 6px;}
+    .nominal-price{font-weight:900;font-size:15px;color:var(--text);}
+    .promo-row{display:flex;gap:8px;}
+    .promo-input{flex:1;width:auto;text-transform:uppercase;letter-spacing:1px;}
+    .promo-btn{background:linear-gradient(135deg,var(--green),var(--lime2));border:none;color:#fff;font-family:'Nunito',sans-serif;font-weight:900;font-size:13px;padding:12px 18px;border-radius:10px;cursor:pointer;transition:all .2s;white-space:nowrap;}
+    .promo-btn:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(0,200,83,.3);}
+    .promo-msg{font-size:12px;font-weight:700;margin-top:8px;display:none;}
+    .promo-msg.success{color:var(--green);display:block;}
+    .promo-msg.error{color:#E53935;display:block;}
+    .qris-box{text-align:center;padding:20px;background:linear-gradient(135deg,rgba(0,200,83,.05),rgba(57,255,20,.03));border:2px dashed var(--green);border-radius:14px;margin-bottom:16px;}
+    .qris-img{width:200px;height:200px;background:linear-gradient(135deg,#E8F5E9,#F1F8E9);border:3px solid var(--green);border-radius:12px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:60px;}
+    .qris-title{font-weight:900;font-size:16px;color:var(--darkgreen);margin-bottom:6px;}
+    .qris-sub{font-size:13px;color:var(--muted);font-weight:600;}
+    .trx-note{background:linear-gradient(135deg,rgba(255,193,7,.1),rgba(255,152,0,.05));border:2px solid rgba(255,193,7,.3);border-radius:10px;padding:12px 14px;font-size:13px;font-weight:700;color:#E65100;margin-bottom:16px;}
+    .summary-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);font-size:14px;}
+    .summary-row:last-child{border-bottom:none;}
+    .summary-row .label{color:var(--muted);font-weight:700;}
+    .summary-row .val{font-weight:800;color:var(--text);}
+    .summary-row.total .label{font-weight:900;font-size:15px;color:var(--text);}
+    .summary-row.total .val{color:var(--green);font-size:20px;font-family:'Bebas Neue',sans-serif;letter-spacing:1px;}
+    .discount-val{color:var(--green)!important;}
+    .btn-primary{width:100%;padding:16px;background:linear-gradient(135deg,var(--green),var(--lime2));color:#fff;font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;border:none;border-radius:12px;cursor:pointer;transition:all .2s;margin-top:16px;box-shadow:0 4px 20px rgba(0,200,83,.3);}
+    .btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,200,83,.4);}
+    .btn-primary:disabled{opacity:.6;cursor:not-allowed;transform:none;}
+    .riwayat-item{display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid var(--border);}
+    .riwayat-item:last-child{border-bottom:none;}
+    .riwayat-icon{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,rgba(0,200,83,.1),rgba(57,255,20,.05));border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+    .riwayat-info{flex:1;min-width:0;}
+    .riwayat-name{font-weight:800;font-size:14px;color:var(--text);}
+    .riwayat-detail{font-size:12px;color:var(--muted);font-weight:600;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .riwayat-status{font-weight:900;font-size:11px;padding:4px 10px;border-radius:99px;white-space:nowrap;flex-shrink:0;}
+    .status-menunggu{background:rgba(255,193,7,.15);color:#F57F17;}
+    .status-dikonfirmasi{background:rgba(0,200,83,.15);color:var(--darkgreen);}
+    .status-ditolak{background:rgba(229,57,53,.1);color:#C62828;}
+    .tabs{display:flex;gap:4px;margin-bottom:20px;background:#fff;border:2px solid var(--border);border-radius:12px;padding:4px;box-shadow:var(--shadow);}
+    .tab{flex:1;padding:10px;text-align:center;cursor:pointer;border-radius:9px;font-weight:800;font-size:13px;color:var(--muted);transition:all .2s;}
+    .tab.active{background:linear-gradient(135deg,var(--green),var(--lime2));color:#fff;box-shadow:0 2px 10px rgba(0,200,83,.3);}
+    .panel{display:none;}
+    .panel.active{display:block;}
+    .loading{text-align:center;padding:40px;color:var(--muted);font-weight:700;}
+    .spinner{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--green);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 12px;}
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,80,30,.4);backdrop-filter:blur(8px);z-index:200;display:none;align-items:center;justify-content:center;padding:20px;}
+    .modal-overlay.open{display:flex;}
+    .modal{background:#fff;border:2px solid var(--border);border-radius:20px;padding:32px 24px;max-width:400px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,100,40,.2);animation:popIn .3s ease;}
+    .modal-icon{font-size:56px;margin-bottom:12px;}
+    .modal h2{font-family:'Bebas Neue',sans-serif;font-size:30px;letter-spacing:2px;color:var(--darkgreen);margin-bottom:6px;}
+    .modal p{color:var(--muted);font-size:13px;font-weight:600;line-height:1.6;}
+    .modal-detail{background:var(--bg);border:2px solid var(--border);border-radius:12px;padding:14px;margin:16px 0;text-align:left;}
+    .modal-detail .row{display:flex;justify-content:space-between;font-size:13px;padding:5px 0;border-bottom:1px solid var(--border);}
+    .modal-detail .row:last-child{border-bottom:none;}
+    .modal-detail .row .k{color:var(--muted);font-weight:700;}
+    .modal-detail .row .v{font-weight:800;color:var(--text);}
+    .modal-close{width:100%;padding:14px;background:linear-gradient(135deg,var(--green),var(--lime2));color:#fff;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;border:none;border-radius:10px;cursor:pointer;transition:all .2s;box-shadow:0 4px 16px rgba(0,200,83,.3);}
+    .modal-close:hover{transform:translateY(-1px);}
+    .toast{position:fixed;bottom:24px;right:16px;background:#fff;border:2px solid var(--green);border-radius:12px;padding:12px 18px;font-size:13px;font-weight:800;color:var(--darkgreen);z-index:300;transform:translateY(100px);opacity:0;transition:all .3s ease;box-shadow:0 4px 20px rgba(0,200,83,.2);max-width:280px;}
+    .toast.show{transform:translateY(0);opacity:1;}
+    .empty-state{text-align:center;padding:40px;color:var(--muted);}
+    .empty-state div{font-size:48px;margin-bottom:12px;}
+    .empty-state p{font-weight:700;font-size:14px;}
+    footer{position:relative;z-index:1;text-align:center;padding:20px;border-top:2px solid var(--border);color:var(--muted);font-size:13px;font-weight:700;background:#fff;}
+    footer span{color:var(--green);}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes popIn{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:scale(1)}}
+    @keyframes spin{to{transform:rotate(360deg)}}
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">BUAHLILSID <span>STORE</span></div>
+  <div class="nav-badge">🚌 TOP UP BUSSID</div>
+</nav>
+
+<div class="hero">
+  <div class="hero-tag">⚡ Proses Cepat & Terpercaya</div>
+  <h1>TOP UP<br/><span class="accent">BUSSID</span></h1>
+  <p>Top up uang BUSSID mudah, cepat, dan harga terjangkau</p>
+</div>
+
+<div class="container">
+  <div class="tabs">
+    <div class="tab active" id="tab-topup">🎮 Top Up</div>
+    <div class="tab" id="tab-riwayat">📋 Riwayat</div>
+  </div>
+
+  <div class="panel active" id="panel-topup">
+    <div class="steps">
+      <div class="step active" id="step1-ind"><div class="step-num">1</div><div class="step-label">Akun</div></div>
+      <div class="step" id="step2-ind"><div class="step-num">2</div><div class="step-label">Paket</div></div>
+      <div class="step" id="step3-ind"><div class="step-num">3</div><div class="step-label">Bayar</div></div>
+    </div>
+
+    <div id="sec1">
+      <div class="card">
+        <div class="card-title">Data Akun BUSSID</div>
+        <div class="form-row">
+          <div class="form-group"><label>ID Player</label><input type="text" id="player-id" placeholder="Contoh: 123456789" maxlength="20"/></div>
+          <div class="form-group"><label>Username</label><input type="text" id="username" placeholder="Nama karakter kamu" maxlength="30"/></div>
+        </div>
+      </div>
+      <button class="btn-primary" id="btn-step2">LANJUT →</button>
+    </div>
+
+    <div id="sec2" style="display:none">
+      <div class="card">
+        <div class="card-title">Pilih Paket</div>
+        <div class="paket-label">👍 PAKET MURAH</div>
+        <div class="nominal-grid">
+          <div class="nominal-item" data-idx="0"><div class="nominal-uang">100 JT</div><div class="nominal-sub">Uang Bussid</div><div class="nominal-price">Rp10.000</div></div>
+          <div class="nominal-item" data-idx="1"><div class="nominal-uang">150 JT</div><div class="nominal-sub">Uang Bussid</div><div class="nominal-price">Rp15.000</div></div>
+          <div class="nominal-item" data-idx="2"><div class="nominal-uang">180 JT</div><div class="nominal-sub">Uang Bussid</div><div class="nominal-price">Rp20.000</div></div>
+        </div>
+        <div class="paket-label">🔥 PAKET TENGAH</div>
+        <div class="nominal-grid">
+          <div class="nominal-item" data-idx="3"><div class="nominal-uang">200 JT</div><div class="nominal-sub">Uang Bussid</div><div class="nominal-price">Rp30.000</div></div>
+          <div class="nominal-item" data-idx="4"><div class="nominal-uang">600 JT</div><div class="nominal-sub">Uang Bussid</div><div class="nominal-price">Rp35.000</div></div>
+          <div class="nominal-item" data-idx="5"><div class="nominal-uang">800 JT</div><div class="nominal-sub">Uang Bussid</div><div class="nominal-price">Rp40.000</div></div>
+        </div>
+        <div class="paket-label">💰 PAKET SULTAN</div>
+        <div class="nominal-grid">
+          <div class="nominal-item" data-idx="6"><div class="nominal-uang">1,6 M</div><div class="nominal-sub">Uang Bussid</div><div class="nominal-price">Rp50.000</div></div>
+          <div class="nominal-item" data-idx="7"><div class="nominal-uang">2 M</div><div class="nominal-sub">Uang Bussid</div><div class="nominal-price">Rp60.000</div></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Kode Promo</div>
+        <div class="promo-row">
+          <input type="text" class="promo-input" id="promo-input" placeholder="Masukkan kode promo..."/>
+          <button class="promo-btn" id="btn-promo">PAKAI</button>
+        </div>
+        <div class="promo-msg" id="promo-msg"></div>
+      </div>
+      <button class="btn-primary" id="btn-step3">LANJUT →</button>
+    </div>
+
+    <div id="sec3" style="display:none">
+      <div class="qris-box">
+        <div class="qris-img">📱</div>
+        <div class="qris-title">Scan QRIS untuk Bayar</div>
+        <div class="qris-sub">Bayar sesuai total, lalu masukkan ID transaksi</div>
+      </div>
+      <div class="trx-note">💡 Setelah bayar, salin <strong>ID Transaksi / Nomor Referensi</strong> dari bukti bayar, lalu masukkan di bawah.</div>
+      <div class="card">
+        <div class="card-title">Ringkasan Pesanan</div>
+        <div class="summary-row"><span class="label">ID Player</span><span class="val" id="sum-id">—</span></div>
+        <div class="summary-row"><span class="label">Username</span><span class="val" id="sum-user">—</span></div>
+        <div class="summary-row"><span class="label">Paket</span><span class="val" id="sum-paket">—</span></div>
+        <div class="summary-row" id="sum-promo-row" style="display:none"><span class="label">Diskon</span><span class="val discount-val" id="sum-discount">—</span></div>
+        <div class="summary-row total"><span class="label">Total</span><span class="val" id="sum-total">—</span></div>
+      </div>
+      <div class="card">
+        <div class="card-title">ID Transaksi</div>
+        <div class="form-group">
+          <label>Nomor Referensi / ID Transaksi QRIS</label>
+          <input type="text" id="trx-id" placeholder="Contoh: TRX1234567890" maxlength="50"/>
+        </div>
+      </div>
+      <button class="btn-primary" id="btn-submit">🚌 KONFIRMASI PESANAN</button>
+    </div>
+  </div>
+
+  <div class="panel" id="panel-riwayat">
+    <div class="card">
+      <div class="card-title">Cari Riwayat Transaksi</div>
+      <div class="form-group">
+        <label>ID Player</label>
+        <input type="text" id="cari-id" placeholder="Masukkan ID Player kamu..."/>
+      </div>
+      <button class="btn-primary" id="btn-cari" style="margin-top:12px">🔍 CARI RIWAYAT</button>
+    </div>
+    <div class="card">
+      <div class="card-title">Hasil</div>
+      <div id="riwayat-list"><div class="empty-state"><div>🔍</div><p>Masukkan ID Player untuk melihat riwayat.</p></div></div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <div class="modal-icon">✅</div>
+    <h2>PESANAN DIKIRIM!</h2>
+    <p>Pesanan kamu sedang menunggu konfirmasi admin. Uang Bussid akan masuk setelah dikonfirmasi.</p>
+    <div class="modal-detail" id="modal-detail"></div>
+    <button class="modal-close" id="btn-modal-close">TUTUP</button>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<footer>&copy; 2025 <span>Buahlilsid Store</span> — Top Up BUSSID Terpercaya 🚌</footer>
+
+<script>
+  // Inisialisasi Firebase
+  firebase.initializeApp({
+    apiKey: "AIzaSyDtH8OSCQNk9DxZ6aGyG2ioUif7xnIfqNA",
+    authDomain: "buahlilsid-store.firebaseapp.com",
+    projectId: "buahlilsid-store",
+    storageBucket: "buahlilsid-store.firebasestorage.app",
+    messagingSenderId: "331092607987",
+    appId: "1:331092607987:web:96731633598377718a0886"
+  });
+  var db = firebase.firestore();
+
+  var nominals = [
+    {uang:'100.000.000',label:'100 JT',harga:10000},
+    {uang:'150.000.000',label:'150 JT',harga:15000},
+    {uang:'180.000.000',label:'180 JT',harga:20000},
+    {uang:'200.000.000',label:'200 JT',harga:30000},
+    {uang:'600.000.000',label:'600 JT',harga:35000},
+    {uang:'800.000.000',label:'800 JT',harga:40000},
+    {uang:'1.600.000.000',label:'1,6 M',harga:50000},
+    {uang:'2.000.000.000',label:'2 M',harga:60000}
+  ];
+  var promoCodes = {
+    'BUSSID10':{disc:10,label:'Diskon 10%'},
+    'BUAHLILSID':{disc:15,label:'Diskon 15%'},
+    'NEWMEMBER':{disc:5000,flat:true,label:'Potongan Rp5.000'}
+  };
+  var selectedNominal = null;
+  var appliedPromo = null;
+
+  // Semua event listener dipasang setelah DOM siap
+  document.addEventListener('DOMContentLoaded', function() {
+
+    // Tab
+    document.getElementById('tab-topup').addEventListener('click', function() { switchTab('topup'); });
+    document.getElementById('tab-riwayat').addEventListener('click', function() { switchTab('riwayat'); });
+
+    // Nominal pilih
+    document.querySelectorAll('.nominal-item').forEach(function(el) {
+      el.addEventListener('click', function() {
+        document.querySelectorAll('.nominal-item').forEach(function(e){ e.classList.remove('selected'); });
+        el.classList.add('selected');
+        selectedNominal = nominals[parseInt(el.getAttribute('data-idx'))];
+      });
+    });
+
+    // Tombol steps
+    document.getElementById('btn-step2').addEventListener('click', goStep2);
+    document.getElementById('btn-step3').addEventListener('click', goStep3);
+    document.getElementById('btn-promo').addEventListener('click', applyPromo);
+    document.getElementById('btn-submit').addEventListener('click', submitOrder);
+    document.getElementById('btn-modal-close').addEventListener('click', closeModal);
+    document.getElementById('btn-cari').addEventListener('click', cariRiwayat);
+  });
+
+  function goStep2() {
+    var id = document.getElementById('player-id').value.trim();
+    var user = document.getElementById('username').value.trim();
+    if (!id || !user) { showToast('⚠️ Isi ID Player dan Username dulu!'); return; }
+    setStep(2);
+  }
+
+  function goStep3() {
+    if (!selectedNominal) { showToast('⚠️ Pilih paket dulu!'); return; }
+    document.getElementById('sum-id').textContent = document.getElementById('player-id').value.trim();
+    document.getElementById('sum-user').textContent = document.getElementById('username').value.trim();
+    document.getElementById('sum-paket').textContent = selectedNominal.uang + ' Uang Bussid';
+    updateTotal();
+    setStep(3);
+  }
+
+  function applyPromo() {
+    if (!selectedNominal) { showToast('⚠️ Pilih paket dulu!'); return; }
+    var code = document.getElementById('promo-input').value.trim().toUpperCase();
+    var msg = document.getElementById('promo-msg');
+    if (promoCodes[code]) {
+      appliedPromo = {code: code, disc: promoCodes[code].disc, flat: promoCodes[code].flat, label: promoCodes[code].label};
+      msg.textContent = '✅ Promo berhasil! ' + promoCodes[code].label;
+      msg.className = 'promo-msg success';
+      showToast('🎁 Kode promo berhasil!');
+    } else {
+      appliedPromo = null;
+      msg.textContent = '❌ Kode promo tidak valid.';
+      msg.className = 'promo-msg error';
+    }
+  }
+
+  function calcTotal() {
+    if (!selectedNominal) return 0;
+    var total = selectedNominal.harga;
+    if (appliedPromo) {
+      if (appliedPromo.flat) total -= appliedPromo.disc;
+      else total -= Math.round(total * appliedPromo.disc / 100);
+    }
+    return Math.max(total, 0);
+  }
+
+  function updateTotal() {
+    var total = calcTotal();
+    document.getElementById('sum-total').textContent = 'Rp' + total.toLocaleString('id-ID');
+    if (appliedPromo) {
+      document.getElementById('sum-discount').textContent = '-Rp' + (selectedNominal.harga - total).toLocaleString('id-ID');
+      document.getElementById('sum-promo-row').style.display = 'flex';
+    } else {
+      document.getElementById('sum-promo-row').style.display = 'none';
+    }
+  }
+
+  function submitOrder() {
+    var trxId = document.getElementById('trx-id').value.trim();
+    if (!trxId) { showToast('⚠️ Masukkan ID Transaksi dulu!'); return; }
+    var btn = document.getElementById('btn-submit');
+    btn.disabled = true; btn.textContent = 'MEMPROSES...';
+    var id = document.getElementById('player-id').value.trim();
+    var user = document.getElementById('username').value.trim();
+    var total = calcTotal();
+    db.collection('orders').add({
+      playerId: id, username: user,
+      paket: selectedNominal.uang + ' Uang Bussid',
+      paketLabel: selectedNominal.label,
+      hargaAsli: selectedNominal.harga, totalBayar: total,
+      promoCode: appliedPromo ? appliedPromo.code : null,
+      idTransaksi: trxId, status: 'menunggu',
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    }).then(function() {
+      document.getElementById('modal-detail').innerHTML =
+        '<div class="row"><span class="k">ID Player</span><span class="v">'+id+'</span></div>'+
+        '<div class="row"><span class="k">Username</span><span class="v">'+user+'</span></div>'+
+        '<div class="row"><span class="k">Paket</span><span class="v">'+selectedNominal.uang+' Uang Bussid</span></div>'+
+        '<div class="row"><span class="k">ID Transaksi</span><span class="v">'+trxId+'</span></div>'+
+        '<div class="row"><span class="k">Total</span><span class="v" style="color:var(--green)">Rp'+total.toLocaleString('id-ID')+'</span></div>'+
+        '<div class="row"><span class="k">Status</span><span class="v" style="color:#F57F17">⏳ Menunggu Konfirmasi</span></div>';
+      document.getElementById('modal').classList.add('open');
+    }).catch(function(e) {
+      showToast('❌ Gagal mengirim. Coba lagi!'); console.error(e);
+    }).finally(function() {
+      btn.disabled = false; btn.textContent = '🚌 KONFIRMASI PESANAN';
+    });
+  }
+
+  function closeModal() {
+    document.getElementById('modal').classList.remove('open');
+    selectedNominal = null; appliedPromo = null;
+    ['player-id','username','trx-id','promo-input'].forEach(function(id){ document.getElementById(id).value = ''; });
+    document.getElementById('promo-msg').className = 'promo-msg';
+    document.querySelectorAll('.nominal-item').forEach(function(e){ e.classList.remove('selected'); });
+    setStep(1);
+  }
+
+  function cariRiwayat() {
+    var cariId = document.getElementById('cari-id').value.trim();
+    if (!cariId) { showToast('⚠️ Masukkan ID Player dulu!'); return; }
+    var el = document.getElementById('riwayat-list');
+    el.innerHTML = '<div class="loading"><div class="spinner"></div>Memuat...</div>';
+    db.collection('orders').where('playerId','==',cariId).orderBy('createdAt','desc').get()
+      .then(function(snap) {
+        if (snap.empty) { el.innerHTML = '<div class="empty-state"><div>📭</div><p>Belum ada transaksi untuk ID ini.</p></div>'; return; }
+        el.innerHTML = snap.docs.map(function(doc) {
+          var d = doc.data();
+          var time = d.createdAt ? new Date(d.createdAt.seconds*1000).toLocaleString('id-ID') : 'Baru saja';
+          var sc = d.status==='dikonfirmasi'?'status-dikonfirmasi':d.status==='ditolak'?'status-ditolak':'status-menunggu';
+          var sl = d.status==='dikonfirmasi'?'✅ Dikonfirmasi':d.status==='ditolak'?'❌ Ditolak':'⏳ Menunggu';
+          return '<div class="riwayat-item"><div class="riwayat-icon">🚌</div><div class="riwayat-info"><div class="riwayat-name">'+d.paket+' · Rp'+(d.totalBayar||0).toLocaleString('id-ID')+'</div><div class="riwayat-detail">'+d.username+' · ID: '+d.playerId+' · '+time+'</div></div><div class="riwayat-status '+sc+'">'+sl+'</div></div>';
+        }).join('');
+      }).catch(function(e) {
+        el.innerHTML = '<div class="empty-state"><div>⚠️</div><p>Gagal memuat. Periksa koneksi kamu.</p></div>';
+        console.error(e);
+      });
+  }
+
+  function setStep(n) {
+    document.getElementById('sec1').style.display = n===1?'block':'none';
+    document.getElementById('sec2').style.display = n===2?'block':'none';
+    document.getElementById('sec3').style.display = n===3?'block':'none';
+    for (var i=1;i<=3;i++) {
+      document.getElementById('step'+i+'-ind').className = 'step'+(i<n?' done':i===n?' active':'');
+    }
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+
+  function switchTab(tab) {
+    document.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('active'); });
+    document.querySelectorAll('.panel').forEach(function(p){ p.classList.remove('active'); });
+    document.getElementById('tab-'+tab).classList.add('active');
+    document.getElementById('panel-'+tab).classList.add('active');
+  }
+
+  function showToast(msg) {
+    var t = document.getElementById('toast');
+    t.textContent = msg; t.classList.add('show');
+    setTimeout(function(){ t.classList.remove('show'); }, 2800);
+  }
+</script>
+</body>
+</html>
