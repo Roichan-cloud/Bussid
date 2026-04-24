@@ -149,8 +149,8 @@
       <div class="card">
         <div class="card-title">Data Akun BUSSID</div>
         <div class="form-row">
+          <div class="form-group"><label>Email Bussid</label><input type="email" id="username" placeholder="Contoh: nama@gmail.com" maxlength="100"/></div>
           <div class="form-group"><label>ID Player</label><input type="text" id="player-id" placeholder="Contoh: 123456789" maxlength="20"/></div>
-          <div class="form-group"><label>Username</label><input type="text" id="username" placeholder="Nama karakter kamu" maxlength="30"/></div>
         </div>
       </div>
       <button class="btn-primary" id="btn-step2">LANJUT →</button>
@@ -197,8 +197,8 @@
       <div class="trx-note">💡 Setelah bayar, salin <strong>ID Transaksi / Nomor Referensi</strong> dari bukti bayar, lalu masukkan di bawah.</div>
       <div class="card">
         <div class="card-title">Ringkasan Pesanan</div>
+        <div class="summary-row"><span class="label">Email Bussid</span><span class="val" id="sum-user">—</span></div>
         <div class="summary-row"><span class="label">ID Player</span><span class="val" id="sum-id">—</span></div>
-        <div class="summary-row"><span class="label">Username</span><span class="val" id="sum-user">—</span></div>
         <div class="summary-row"><span class="label">Paket</span><span class="val" id="sum-paket">—</span></div>
         <div class="summary-row" id="sum-promo-row" style="display:none"><span class="label">Diskon</span><span class="val discount-val" id="sum-discount">—</span></div>
         <div class="summary-row total"><span class="label">Total</span><span class="val" id="sum-total">—</span></div>
@@ -218,14 +218,14 @@
     <div class="card">
       <div class="card-title">Cari Riwayat Transaksi</div>
       <div class="form-group">
-        <label>ID Player</label>
-        <input type="text" id="cari-id" placeholder="Masukkan ID Player kamu..."/>
+        <label>Email Bussid</label>
+        <input type="email" id="cari-id" placeholder="Masukkan email Bussid kamu..."/>
       </div>
       <button class="btn-primary" id="btn-cari" style="margin-top:12px">🔍 CARI RIWAYAT</button>
     </div>
     <div class="card">
       <div class="card-title">Hasil</div>
-      <div id="riwayat-list"><div class="empty-state"><div>🔍</div><p>Masukkan ID Player untuk melihat riwayat.</p></div></div>
+      <div id="riwayat-list"><div class="empty-state"><div>🔍</div><p>Masukkan Email Bussid untuk melihat riwayat.</p></div></div>
     </div>
   </div>
 </div>
@@ -264,11 +264,7 @@
     {uang:'1.600.000.000',label:'1,6 M',harga:50000},
     {uang:'2.000.000.000',label:'2 M',harga:60000}
   ];
-  var promoCodes = {
-    'BUSSID10':{disc:10,label:'Diskon 10%'},
-    'BUAHLILSID':{disc:15,label:'Diskon 15%'},
-    'NEWMEMBER':{disc:5000,flat:true,label:'Potongan Rp5.000'}
-  };
+  var promoCodes = {}; // Dimuat dari Firebase Firestore
   var selectedNominal = null;
   var appliedPromo = null;
 
@@ -300,14 +296,14 @@
   function goStep2() {
     var id = document.getElementById('player-id').value.trim();
     var user = document.getElementById('username').value.trim();
-    if (!id || !user) { showToast('⚠️ Isi ID Player dan Username dulu!'); return; }
+    if (!id || !user) { showToast('⚠️ Isi Email Bussid dan ID Player dulu!'); return; }
     setStep(2);
   }
 
   function goStep3() {
     if (!selectedNominal) { showToast('⚠️ Pilih paket dulu!'); return; }
-    document.getElementById('sum-id').textContent = document.getElementById('player-id').value.trim();
     document.getElementById('sum-user').textContent = document.getElementById('username').value.trim();
+    document.getElementById('sum-id').textContent = document.getElementById('player-id').value.trim();
     document.getElementById('sum-paket').textContent = selectedNominal.uang + ' Uang Bussid';
     updateTotal();
     setStep(3);
@@ -317,16 +313,33 @@
     if (!selectedNominal) { showToast('⚠️ Pilih paket dulu!'); return; }
     var code = document.getElementById('promo-input').value.trim().toUpperCase();
     var msg = document.getElementById('promo-msg');
-    if (promoCodes[code]) {
-      appliedPromo = {code: code, disc: promoCodes[code].disc, flat: promoCodes[code].flat, label: promoCodes[code].label};
-      msg.textContent = '✅ Promo berhasil! ' + promoCodes[code].label;
-      msg.className = 'promo-msg success';
-      showToast('🎁 Kode promo berhasil!');
-    } else {
-      appliedPromo = null;
-      msg.textContent = '❌ Kode promo tidak valid.';
-      msg.className = 'promo-msg error';
-    }
+    msg.textContent = 'Memeriksa kode...';
+    msg.className = 'promo-msg success';
+    db.collection('promoCodes').where('kode', '==', code).limit(1).get()
+      .then(function(snap) {
+        if (snap.empty) {
+          appliedPromo = null;
+          msg.textContent = '❌ Kode promo tidak valid.';
+          msg.className = 'promo-msg error';
+          return;
+        }
+        var d = snap.docs[0].data();
+        if (d.isExpired) {
+          appliedPromo = null;
+          msg.textContent = '⌛ Kode promo ini sudah kadaluarsa.';
+          msg.className = 'promo-msg error';
+          return;
+        }
+        var discLabel = d.tipe === 'flat' ? 'Potongan Rp' + d.nilai.toLocaleString('id-ID') : 'Diskon ' + d.nilai + '%';
+        appliedPromo = {code: code, disc: d.nilai, flat: d.tipe === 'flat', label: discLabel};
+        msg.textContent = '✅ Promo berhasil! ' + discLabel;
+        msg.className = 'promo-msg success';
+        showToast('🎁 Kode promo berhasil!');
+      }).catch(function(e) {
+        msg.textContent = '❌ Gagal memeriksa kode. Coba lagi!';
+        msg.className = 'promo-msg error';
+        console.error(e);
+      });
   }
 
   function calcTotal() {
@@ -368,8 +381,8 @@
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
     }).then(function() {
       document.getElementById('modal-detail').innerHTML =
+        '<div class="row"><span class="k">Email Bussid</span><span class="v">'+user+'</span></div>'+
         '<div class="row"><span class="k">ID Player</span><span class="v">'+id+'</span></div>'+
-        '<div class="row"><span class="k">Username</span><span class="v">'+user+'</span></div>'+
         '<div class="row"><span class="k">Paket</span><span class="v">'+selectedNominal.uang+' Uang Bussid</span></div>'+
         '<div class="row"><span class="k">ID Transaksi</span><span class="v">'+trxId+'</span></div>'+
         '<div class="row"><span class="k">Total</span><span class="v" style="color:var(--green)">Rp'+total.toLocaleString('id-ID')+'</span></div>'+
@@ -393,10 +406,10 @@
 
   function cariRiwayat() {
     var cariId = document.getElementById('cari-id').value.trim();
-    if (!cariId) { showToast('⚠️ Masukkan ID Player dulu!'); return; }
+    if (!cariId) { showToast('⚠️ Masukkan Email Bussid dulu!'); return; }
     var el = document.getElementById('riwayat-list');
     el.innerHTML = '<div class="loading"><div class="spinner"></div>Memuat...</div>';
-    db.collection('orders').where('playerId','==',cariId).orderBy('createdAt','desc').get()
+    db.collection('orders').where('username','==',cariId).orderBy('createdAt','desc').get()
       .then(function(snap) {
         if (snap.empty) { el.innerHTML = '<div class="empty-state"><div>📭</div><p>Belum ada transaksi untuk ID ini.</p></div>'; return; }
         el.innerHTML = snap.docs.map(function(doc) {
@@ -404,7 +417,7 @@
           var time = d.createdAt ? new Date(d.createdAt.seconds*1000).toLocaleString('id-ID') : 'Baru saja';
           var sc = d.status==='dikonfirmasi'?'status-dikonfirmasi':d.status==='ditolak'?'status-ditolak':'status-menunggu';
           var sl = d.status==='dikonfirmasi'?'✅ Dikonfirmasi':d.status==='ditolak'?'❌ Ditolak':'⏳ Menunggu';
-          return '<div class="riwayat-item"><div class="riwayat-icon">🚌</div><div class="riwayat-info"><div class="riwayat-name">'+d.paket+' · Rp'+(d.totalBayar||0).toLocaleString('id-ID')+'</div><div class="riwayat-detail">'+d.username+' · ID: '+d.playerId+' · '+time+'</div></div><div class="riwayat-status '+sc+'">'+sl+'</div></div>';
+          return '<div class="riwayat-item"><div class="riwayat-icon">🚌</div><div class="riwayat-info"><div class="riwayat-name">'+d.paket+' · Rp'+(d.totalBayar||0).toLocaleString('id-ID')+'</div><div class="riwayat-detail">📧 '+d.username+' · 🎮 ID: '+d.playerId+' · '+time+'</div></div><div class="riwayat-status '+sc+'">'+sl+'</div></div>';
         }).join('');
       }).catch(function(e) {
         el.innerHTML = '<div class="empty-state"><div>⚠️</div><p>Gagal memuat. Periksa koneksi kamu.</p></div>';
