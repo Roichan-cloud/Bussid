@@ -100,6 +100,8 @@
     .riwayat-name{font-weight:800;font-size:14px;color:var(--text);}
     .riwayat-detail{font-size:12px;color:var(--muted);font-weight:600;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
     .riwayat-rating{font-size:11px;color:#F57F17;font-weight:700;margin-top:2px;}
+    .btn-rating-riwayat{background:linear-gradient(135deg,#FFB300,#FF8F00);color:#fff;border:none;font-family:'Nunito',sans-serif;font-weight:800;font-size:11px;padding:6px 12px;border-radius:7px;cursor:pointer;transition:all .2s;white-space:nowrap;}
+    .btn-rating-riwayat:hover{transform:translateY(-1px);box-shadow:0 3px 10px rgba(255,179,0,.3);}
     .riwayat-status{font-weight:900;font-size:11px;padding:4px 10px;border-radius:99px;white-space:nowrap;flex-shrink:0;}
     .status-menunggu{background:rgba(255,193,7,.15);color:#F57F17;}
     .status-dikonfirmasi{background:rgba(0,200,83,.15);color:var(--darkgreen);}
@@ -177,7 +179,6 @@
 <div class="container">
   <div class="tabs">
     <div class="tab active" id="tab-topup">🎮 Top Up</div>
-    <div class="tab" id="tab-cek">🔔 Cek Status</div>
     <div class="tab" id="tab-riwayat">📋 Riwayat</div>
   </div>
 
@@ -271,19 +272,6 @@
         </div>
       </div>
       <button class="btn-primary" id="btn-submit">🚌 KONFIRMASI PESANAN</button>
-    </div>
-  </div>
-
-  <!-- CEK STATUS PANEL -->
-  <div class="panel" id="panel-cek">
-    <div class="card">
-      <div class="card-title">🔔 Cek Status Order</div>
-      <div class="form-group">
-        <label>ID Transaksi</label>
-        <input type="text" id="inp-cek-trx" placeholder="Masukkan ID Transaksi kamu..."/>
-      </div>
-      <button class="btn-primary" id="btn-cek" style="margin-top:12px">🔍 CEK STATUS</button>
-      <div class="status-result" id="status-result"></div>
     </div>
   </div>
 
@@ -381,7 +369,6 @@
   document.addEventListener('DOMContentLoaded', function() {
     // Tabs
     document.getElementById('tab-topup').addEventListener('click', function(){ switchTab('topup'); });
-    document.getElementById('tab-cek').addEventListener('click', function(){ switchTab('cek'); });
     document.getElementById('tab-riwayat').addEventListener('click', function(){ switchTab('riwayat'); });
 
     // Nominal
@@ -401,7 +388,6 @@
     document.getElementById('btn-modal-close').addEventListener('click', closeModal);
     document.getElementById('btn-timeout-close').addEventListener('click', closeTimeout);
     document.getElementById('btn-cari').addEventListener('click', cariRiwayat);
-    document.getElementById('btn-cek').addEventListener('click', cekStatus);
 
     // Promo uppercase
     document.getElementById('promo-input').addEventListener('input', function(){
@@ -612,46 +598,6 @@
     setStep(1);
   }
 
-  // ===== CEK STATUS =====
-  function cekStatus() {
-    var trxId = document.getElementById('inp-cek-trx').value.trim();
-    if (!trxId) { showToast('⚠️ Masukkan ID Transaksi dulu!'); return; }
-    var el = document.getElementById('status-result');
-    el.innerHTML = '<div class="loading"><div class="spinner"></div>Mencari...</div>';
-    el.classList.add('show');
-    db.collection('orders').where('idTransaksi', '==', trxId).limit(1).get()
-      .then(function(snap) {
-        if (snap.empty) {
-          el.innerHTML = '<div style="text-align:center;color:var(--muted);font-weight:700;padding:10px">❌ ID Transaksi tidak ditemukan.</div>';
-          return;
-        }
-        var d = snap.docs[0].data();
-        var sc = d.status === 'dikonfirmasi' ? '#00C853' : d.status === 'ditolak' ? '#E53935' : d.status === 'dibatalkan' ? '#888' : '#F57F17';
-        var sl = d.status === 'dikonfirmasi' ? '✅ Dikonfirmasi' : d.status === 'ditolak' ? '❌ Ditolak' : d.status === 'dibatalkan' ? '🚫 Dibatalkan' : '⏳ Menunggu Konfirmasi';
-        var time = d.createdAt ? new Date(d.createdAt.seconds * 1000).toLocaleString('id-ID') : '—';
-        el.innerHTML =
-          '<div class="status-badge" style="background:rgba(0,0,0,.06);color:' + sc + '">' + sl + '</div>' +
-          '<div style="font-size:13px;color:var(--muted);font-weight:600;line-height:1.8">' +
-          '📧 <b>' + (d.email || '—') + '</b><br>' +
-          '🎮 ID: <b>' + (d.idPlayer || '—') + '</b><br>' +
-          '📦 <b>' + (d.paket || '—') + '</b><br>' +
-          '💰 Total: <b>Rp' + (d.totalBayar || 0).toLocaleString('id-ID') + '</b><br>' +
-          '🕐 ' + time +
-          '</div>';
-
-        // Jika dikonfirmasi dan belum ada rating, tampilkan modal rating
-        if (d.status === 'dikonfirmasi' && !d.rating) {
-          lastOrderId = snap.docs[0].id;
-          setTimeout(function() {
-            document.getElementById('modal-rating').classList.add('open');
-          }, 800);
-        }
-      }).catch(function(e) {
-        el.innerHTML = '<div style="text-align:center;color:#E53935;font-weight:700;padding:10px">⚠️ Gagal memuat. Coba lagi.</div>';
-        console.error(e);
-      });
-  }
-
   // ===== RATING =====
   function kirimRating() {
     if (!selectedRating) { showToast('⚠️ Pilih bintang dulu!'); return; }
@@ -699,9 +645,27 @@
               '<div class="riwayat-detail">📧 ' + (d.email || '—') + ' · 🎮 ID: ' + (d.idPlayer || '—') + ' · ' + time + '</div>' +
               (ratingStr ? '<div class="riwayat-rating">' + ratingStr + '</div>' : '') +
             '</div>' +
-            '<div class="riwayat-status ' + sc + '">' + sl + '</div>' +
+            '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0">' +
+              '<div class="riwayat-status ' + sc + '">' + sl + '</div>' +
+              (!d.rating && d.status === 'dikonfirmasi' ? '<button class="btn-rating-riwayat" data-id="' + doc.id + '">⭐ Rating</button>' : '') +
+            '</div>' +
           '</div>';
         }).join('');
+
+        // Rating button events
+        document.querySelectorAll('.btn-rating-riwayat').forEach(function(btn) {
+          btn.addEventListener('click', function() {
+            lastOrderId = btn.getAttribute('data-id');
+            selectedRating = 0;
+            document.querySelectorAll('.star').forEach(function(s){
+              s.classList.remove('active');
+              s.style.opacity = '0.4';
+              s.style.filter = 'grayscale(1)';
+            });
+            document.getElementById('rating-text').value = '';
+            document.getElementById('modal-rating').classList.add('open');
+          });
+        });
       }).catch(function(e) {
         el.innerHTML = '<div class="empty-state"><div>⚠️</div><p>Gagal memuat. Periksa koneksi kamu.</p></div>';
         console.error(e);
@@ -728,19 +692,19 @@
 
   // ===== RATING OVERVIEW =====
   function loadRatingOverview() {
-    db.collection('orders').where('rating', '!=', null).onSnapshot(function(snap) {
-        if (snap.empty) {
-          document.getElementById('rating-overview-box').innerHTML =
-            '<div style="text-align:center;color:var(--muted);font-weight:700;font-size:13px;padding:10px">⭐ Belum ada rating. Jadilah yang pertama!</div>';
-          return;
-        }
+    db.collection('orders').onSnapshot(function(snap) {
         var counts = {1:0,2:0,3:0,4:0,5:0};
         var total = 0;
         var sum = 0;
         snap.docs.forEach(function(doc) {
           var r = doc.data().rating;
-          if (r >= 1 && r <= 5) { counts[r]++; total++; sum += r; }
+          if (r && r >= 1 && r <= 5) { counts[r]++; total++; sum += r; }
         });
+        if (total === 0) {
+          document.getElementById('rating-overview-box').innerHTML =
+            '<div style="text-align:center;color:var(--muted);font-weight:700;font-size:13px;padding:10px">⭐ Belum ada rating. Jadilah yang pertama!</div>';
+          return;
+        }
         var avg = total > 0 ? (sum / total).toFixed(1) : '0.0';
         var avgNum = parseFloat(avg);
 
