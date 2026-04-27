@@ -5,13 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin Dashboard — Buahlilsid Store</title>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
-
-  <!-- Firebase Compat dimuat di HEAD -->
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
   <script src="https://www.google.com/recaptcha/api.js" async defer></script>
-
   <style>
     :root{--green:#00C853;--lime2:#00E676;--darkgreen:#00953D;--bg:#E8FFF0;--text:#0A3D1F;--muted:#4A8C5C;--border:rgba(0,200,83,.25);--shadow:0 4px 24px rgba(0,200,83,.12);--red:#E53935;--yellow:#F57F17;}
     *{margin:0;padding:0;box-sizing:border-box;}
@@ -26,7 +23,7 @@
     .login-field input{width:100%;background:var(--bg);border:2px solid var(--border);border-radius:10px;padding:12px 14px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:600;color:var(--text);outline:none;transition:border-color .2s;}
     .login-field input:focus{border-color:var(--green);}
     .login-btn{width:100%;padding:14px;background:linear-gradient(135deg,var(--green),var(--lime2));color:#fff;font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;border:none;border-radius:10px;cursor:pointer;transition:all .2s;box-shadow:0 4px 16px rgba(0,200,83,.3);margin-top:6px;}
-    .login-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,200,83,.4);}
+    .login-btn:hover{transform:translateY(-2px);}
     .login-btn:disabled{opacity:.6;cursor:not-allowed;transform:none;}
     .login-error{color:var(--red);font-size:13px;font-weight:700;text-align:center;display:none;margin-top:8px;}
     .login-error.show{display:block;}
@@ -39,21 +36,28 @@
     .logout-btn{background:rgba(229,57,53,.1);color:var(--red);border:1.5px solid rgba(229,57,53,.3);font-family:'Nunito',sans-serif;font-weight:800;font-size:12px;padding:6px 14px;border-radius:8px;cursor:pointer;transition:all .2s;}
     .logout-btn:hover{background:var(--red);color:#fff;}
     .dash-container{max-width:1100px;margin:0 auto;padding:24px 16px 60px;}
+    /* NEW ORDER BANNER */
+    .new-order-banner{background:linear-gradient(135deg,rgba(0,200,83,.15),rgba(57,255,20,.08));border:2px solid var(--green);border-radius:12px;padding:12px 18px;margin-bottom:16px;display:none;align-items:center;justify-content:space-between;animation:fadeIn .3s ease;}
+    .new-order-banner.show{display:flex;}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+    /* STATS */
     .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;}
     @media(max-width:700px){.stats-grid{grid-template-columns:repeat(2,1fr);}}
     .stat-card{background:#fff;border:2px solid var(--border);border-radius:14px;padding:18px;box-shadow:var(--shadow);}
     .stat-icon{font-size:28px;margin-bottom:8px;}
     .stat-num{font-family:'Bebas Neue',sans-serif;font-size:30px;letter-spacing:1px;color:var(--green);line-height:1;}
     .stat-label{font-size:12px;font-weight:800;color:var(--muted);margin-top:4px;text-transform:uppercase;}
+    /* FILTER */
     .filter-tabs{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;}
     .filter-tab{padding:8px 16px;border-radius:99px;font-weight:800;font-size:12px;cursor:pointer;transition:all .2s;border:2px solid var(--border);background:#fff;color:var(--muted);}
     .filter-tab.active{background:linear-gradient(135deg,var(--green),var(--lime2));color:#fff;border-color:transparent;}
+    /* ORDERS */
     .orders-card{background:#fff;border:2px solid var(--border);border-radius:16px;overflow:hidden;box-shadow:var(--shadow);}
     .orders-header{padding:18px 20px;border-bottom:2px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
     .orders-title{font-weight:900;font-size:15px;color:var(--darkgreen);text-transform:uppercase;letter-spacing:.5px;}
     .refresh-btn{background:linear-gradient(135deg,var(--green),var(--lime2));color:#fff;border:none;font-family:'Nunito',sans-serif;font-weight:800;font-size:12px;padding:8px 16px;border-radius:8px;cursor:pointer;transition:all .2s;}
     .refresh-btn:hover{transform:translateY(-1px);}
-    .order-item{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap;}
+    .order-item{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap;transition:background .15s;}
     .order-item:last-child{border-bottom:none;}
     .order-item:hover{background:rgba(0,200,83,.02);}
     .order-num{width:32px;height:32px;background:linear-gradient(135deg,rgba(0,200,83,.1),rgba(57,255,20,.05));border:2px solid var(--border);border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;color:var(--green);flex-shrink:0;}
@@ -63,26 +67,19 @@
     .order-paket{background:rgba(0,200,83,.1);color:var(--green);font-weight:800;font-size:11px;padding:2px 8px;border-radius:99px;border:1px solid var(--border);}
     .order-detail{font-size:12px;color:var(--muted);font-weight:600;margin-bottom:2px;}
     .order-trx{font-size:11px;color:var(--muted);font-weight:700;}
+    .order-rating{font-size:12px;color:#FFB300;font-weight:700;margin-top:2px;}
     .order-right{display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0;}
     .order-price{font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--green);}
     .order-status{font-weight:900;font-size:11px;padding:4px 10px;border-radius:99px;white-space:nowrap;}
     .status-menunggu{background:rgba(255,193,7,.15);color:var(--yellow);}
     .status-dikonfirmasi{background:rgba(0,200,83,.15);color:var(--darkgreen);}
     .status-ditolak{background:rgba(229,57,53,.1);color:var(--red);}
+    .status-dibatalkan{background:rgba(100,100,100,.1);color:#666;}
     .order-actions{display:flex;gap:6px;}
     .btn-konfirmasi{background:linear-gradient(135deg,var(--green),var(--lime2));color:#fff;border:none;font-family:'Nunito',sans-serif;font-weight:800;font-size:11px;padding:7px 12px;border-radius:7px;cursor:pointer;transition:all .2s;}
     .btn-konfirmasi:hover{transform:translateY(-1px);box-shadow:0 3px 10px rgba(0,200,83,.3);}
     .btn-tolak{background:rgba(229,57,53,.08);color:var(--red);border:1.5px solid rgba(229,57,53,.25);font-family:'Nunito',sans-serif;font-weight:800;font-size:11px;padding:7px 12px;border-radius:7px;cursor:pointer;transition:all .2s;}
     .btn-tolak:hover{background:var(--red);color:#fff;}
-    .loading{text-align:center;padding:40px;color:var(--muted);font-weight:700;}
-    .spinner{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--green);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 12px;}
-    .empty-state{text-align:center;padding:40px;color:var(--muted);}
-    .empty-state div{font-size:48px;margin-bottom:12px;}
-    .empty-state p{font-weight:700;font-size:14px;}
-    .toast{position:fixed;bottom:24px;right:16px;background:#fff;border:2px solid var(--green);border-radius:12px;padding:12px 18px;font-size:13px;font-weight:800;color:var(--darkgreen);z-index:300;transform:translateY(100px);opacity:0;transition:all .3s ease;box-shadow:0 4px 20px rgba(0,200,83,.2);max-width:280px;}
-    .toast.show{transform:translateY(0);opacity:1;}
-    @keyframes spin{to{transform:rotate(360deg)}}
-
     /* PROMO MANAGER */
     .promo-card{background:#fff;border:2px solid var(--border);border-radius:16px;overflow:hidden;box-shadow:var(--shadow);margin-top:20px;}
     .promo-header{padding:18px 20px;border-bottom:2px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
@@ -118,7 +115,14 @@
     .btn-hapus-promo{background:rgba(229,57,53,.08);color:var(--red);border:1.5px solid rgba(229,57,53,.25);font-family:'Nunito',sans-serif;font-weight:800;font-size:11px;padding:6px 12px;border-radius:7px;cursor:pointer;transition:all .2s;}
     .btn-hapus-promo:hover{background:var(--red);color:#fff;}
     .promo-empty{text-align:center;padding:30px;color:var(--muted);font-weight:700;font-size:13px;}
-
+    .loading{text-align:center;padding:40px;color:var(--muted);font-weight:700;}
+    .spinner{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--green);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 12px;}
+    .empty-state{text-align:center;padding:40px;color:var(--muted);}
+    .empty-state div{font-size:48px;margin-bottom:12px;}
+    .empty-state p{font-weight:700;font-size:14px;}
+    .toast{position:fixed;bottom:24px;right:16px;background:#fff;border:2px solid var(--green);border-radius:12px;padding:12px 18px;font-size:13px;font-weight:800;color:var(--darkgreen);z-index:300;transform:translateY(100px);opacity:0;transition:all .3s ease;box-shadow:0 4px 20px rgba(0,200,83,.2);max-width:280px;}
+    .toast.show{transform:translateY(0);opacity:1;}
+    @keyframes spin{to{transform:rotate(360deg)}}
   </style>
 </head>
 <body>
@@ -136,9 +140,9 @@
       <label>Password</label>
       <input type="password" id="login-pass" placeholder="••••••••"/>
     </div>
-    <div class="login-error" id="login-error">Email atau password salah!</div>
     <div class="g-recaptcha" data-sitekey="6LcVwMgsAAAAAOjFIm0VnUafh3k003jTw7kz2VB2" style="margin:12px 0;transform:scale(0.88);transform-origin:0 0;"></div>
     <div class="login-error" id="recaptcha-error" style="display:none;margin-top:-8px">Selesaikan verifikasi reCAPTCHA dulu!</div>
+    <div class="login-error" id="login-error">Email atau password salah!</div>
     <button class="login-btn" id="login-btn">MASUK →</button>
   </div>
 </div>
@@ -153,18 +157,29 @@
     </div>
   </nav>
   <div class="dash-container">
+    <!-- STATS -->
     <div class="stats-grid">
       <div class="stat-card"><div class="stat-icon">📋</div><div class="stat-num" id="stat-total">0</div><div class="stat-label">Total Order</div></div>
       <div class="stat-card"><div class="stat-icon">⏳</div><div class="stat-num" id="stat-menunggu">0</div><div class="stat-label">Menunggu</div></div>
       <div class="stat-card"><div class="stat-icon">✅</div><div class="stat-num" id="stat-konfirmasi">0</div><div class="stat-label">Dikonfirmasi</div></div>
       <div class="stat-card"><div class="stat-icon">💰</div><div class="stat-num" id="stat-pendapatan">0</div><div class="stat-label">Pendapatan</div></div>
     </div>
+
+    <!-- NEW ORDER BANNER -->
+    <div class="new-order-banner" id="new-order-banner">
+      <span style="font-weight:800;font-size:13px;color:var(--darkgreen)">🔔 Ada order baru masuk!</span>
+      <button class="refresh-btn" id="btn-banner-refresh">Lihat Sekarang</button>
+    </div>
+
+    <!-- FILTER -->
     <div class="filter-tabs">
       <div class="filter-tab active" data-filter="semua">Semua</div>
       <div class="filter-tab" data-filter="menunggu">⏳ Menunggu</div>
       <div class="filter-tab" data-filter="dikonfirmasi">✅ Dikonfirmasi</div>
       <div class="filter-tab" data-filter="ditolak">❌ Ditolak</div>
     </div>
+
+    <!-- ORDERS -->
     <div class="orders-card">
       <div class="orders-header">
         <div class="orders-title">📋 Daftar Order Masuk</div>
@@ -219,13 +234,11 @@
         <div class="promo-empty">Memuat kode promo...</div>
       </div>
     </div>
-
   </div>
 </div>
 <div class="toast" id="toast"></div>
 
 <script>
-  // Init Firebase
   firebase.initializeApp({
     apiKey: "AIzaSyDtH8OSCQNk9DxZ6aGyG2ioUif7xnIfqNA",
     authDomain: "buahlilsid-store.firebaseapp.com",
@@ -236,34 +249,37 @@
   });
   var db = firebase.firestore();
   var auth = firebase.auth();
-
   var allOrders = [];
   var currentFilter = 'semua';
+  var unsubscribeListener = null;
+  var initialLoad = true;
+  var promoFormOpen = false;
 
-  // Auth state
+  // AUTH
   auth.onAuthStateChanged(function(user) {
     if (user) {
       document.getElementById('login-screen').style.display = 'none';
       document.getElementById('dashboard-screen').style.display = 'block';
       loadOrders();
+      loadPromos();
+      startRealtimeListener();
     } else {
       document.getElementById('login-screen').style.display = 'flex';
       document.getElementById('dashboard-screen').style.display = 'none';
+      if (unsubscribeListener) unsubscribeListener();
     }
   });
 
   document.addEventListener('DOMContentLoaded', function() {
-    // Login
     document.getElementById('login-btn').addEventListener('click', doLogin);
     document.getElementById('login-pass').addEventListener('keydown', function(e){ if(e.key==='Enter') doLogin(); });
-
-    // Logout
     document.getElementById('btn-logout').addEventListener('click', function(){ auth.signOut(); });
-
-    // Refresh
     document.getElementById('btn-refresh').addEventListener('click', loadOrders);
+    document.getElementById('btn-banner-refresh').addEventListener('click', function(){
+      document.getElementById('new-order-banner').classList.remove('show');
+      loadOrders();
+    });
 
-    // Filter tabs
     document.querySelectorAll('.filter-tab').forEach(function(tab) {
       tab.addEventListener('click', function() {
         document.querySelectorAll('.filter-tab').forEach(function(t){ t.classList.remove('active'); });
@@ -272,40 +288,73 @@
         renderOrders();
       });
     });
+
+    document.getElementById('btn-toggle-form').addEventListener('click', function() {
+      promoFormOpen = !promoFormOpen;
+      document.getElementById('promo-form').className = 'promo-form' + (promoFormOpen ? ' open' : '');
+      this.textContent = promoFormOpen ? '✕ Tutup' : '+ Tambah Kode';
+    });
+    document.getElementById('btn-save-promo').addEventListener('click', savePromo);
+    document.getElementById('inp-kode').addEventListener('input', function(){ this.value = this.value.toUpperCase().replace(/\s/g,''); });
+    document.getElementById('inp-tipe').addEventListener('change', function() {
+      var nilaiInput = document.getElementById('inp-nilai');
+      if (this.value === 'gratis') { nilaiInput.value = 100; nilaiInput.disabled = true; }
+      else { nilaiInput.disabled = false; nilaiInput.value = ''; }
+    });
   });
 
   function doLogin() {
     var email = document.getElementById('login-email').value.trim();
     var pass = document.getElementById('login-pass').value;
     var errEl = document.getElementById('login-error');
-    var recaptchaErr = document.getElementById('recaptcha-error');
+    var recEl = document.getElementById('recaptcha-error');
     var btn = document.getElementById('login-btn');
-
-    // Cek reCAPTCHA
-    var recaptchaResponse = grecaptcha.getResponse();
-    recaptchaErr.style.display = 'none';
-    if (!recaptchaResponse) {
-      recaptchaErr.style.display = 'block';
-      return;
-    }
-
+    recEl.style.display = 'none';
     errEl.classList.remove('show');
+    var recaptchaResponse = typeof grecaptcha !== 'undefined' ? grecaptcha.getResponse() : 'skip';
+    if (!recaptchaResponse) { recEl.style.display = 'block'; return; }
     btn.disabled = true; btn.textContent = 'MASUK...';
     auth.signInWithEmailAndPassword(email, pass)
-      .catch(function() {
-        errEl.classList.add('show');
-        grecaptcha.reset();
-      })
-      .finally(function() { btn.disabled = false; btn.textContent = 'MASUK →'; });
+      .catch(function(){ errEl.classList.add('show'); if(typeof grecaptcha!=='undefined') grecaptcha.reset(); })
+      .finally(function(){ btn.disabled = false; btn.textContent = 'MASUK →'; });
   }
 
+  // REAL-TIME LISTENER
+  function startRealtimeListener() {
+    if (unsubscribeListener) unsubscribeListener();
+    initialLoad = true;
+    unsubscribeListener = db.collection('orders').orderBy('createdAt','desc').onSnapshot(function(snap) {
+      if (initialLoad) { initialLoad = false; return; }
+      snap.docChanges().forEach(function(change) {
+        if (change.type === 'added') {
+          document.getElementById('new-order-banner').classList.add('show');
+          playNotifSound();
+        }
+      });
+    }, function(e){ console.log('Listener error:', e); });
+  }
+
+  function playNotifSound() {
+    try {
+      var ctx = new (window.AudioContext || window.webkitAudioContext)();
+      var osc = ctx.createOscillator();
+      var gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.frequency.setValueAtTime(880, ctx.currentTime);
+      osc.frequency.setValueAtTime(1100, ctx.currentTime + 0.1);
+      gain.gain.setValueAtTime(0.3, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
+      osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 0.4);
+    } catch(e) {}
+  }
+
+  // ORDERS
   function loadOrders() {
     document.getElementById('orders-list').innerHTML = '<div class="loading"><div class="spinner"></div>Memuat data...</div>';
     db.collection('orders').orderBy('createdAt','desc').get()
       .then(function(snap) {
         allOrders = snap.docs.map(function(d){ return Object.assign({id:d.id}, d.data()); });
-        updateStats();
-        renderOrders();
+        updateStats(); renderOrders();
       }).catch(function(e) {
         document.getElementById('orders-list').innerHTML = '<div class="empty-state"><div>⚠️</div><p>Gagal memuat data.</p></div>';
         console.error(e);
@@ -316,7 +365,7 @@
     var total = allOrders.length;
     var menunggu = allOrders.filter(function(o){ return o.status==='menunggu'; }).length;
     var konfirmasi = allOrders.filter(function(o){ return o.status==='dikonfirmasi'; }).length;
-    var pendapatan = allOrders.filter(function(o){ return o.status==='dikonfirmasi'; }).reduce(function(s,o){ return s+(o.totalBayar||0); }, 0);
+    var pendapatan = allOrders.filter(function(o){ return o.status==='dikonfirmasi'; }).reduce(function(s,o){ return s+(o.totalBayar||0); },0);
     document.getElementById('stat-total').textContent = total;
     document.getElementById('stat-menunggu').textContent = menunggu;
     document.getElementById('stat-konfirmasi').textContent = konfirmasi;
@@ -329,8 +378,9 @@
     if (!filtered.length) { el.innerHTML = '<div class="empty-state"><div>📭</div><p>Tidak ada order di kategori ini.</p></div>'; return; }
     el.innerHTML = filtered.map(function(order, i) {
       var time = order.createdAt ? new Date(order.createdAt.seconds*1000).toLocaleString('id-ID') : 'Baru saja';
-      var sc = order.status==='dikonfirmasi'?'status-dikonfirmasi':order.status==='ditolak'?'status-ditolak':'status-menunggu';
-      var sl = order.status==='dikonfirmasi'?'✅ Dikonfirmasi':order.status==='ditolak'?'❌ Ditolak':'⏳ Menunggu';
+      var sc = order.status==='dikonfirmasi'?'status-dikonfirmasi':order.status==='ditolak'?'status-ditolak':order.status==='dibatalkan'?'status-dibatalkan':'status-menunggu';
+      var sl = order.status==='dikonfirmasi'?'✅ Dikonfirmasi':order.status==='ditolak'?'❌ Ditolak':order.status==='dibatalkan'?'🚫 Dibatalkan':'⏳ Menunggu';
+      var ratingHtml = order.rating ? '<div class="order-rating">⭐'.repeat(order.rating) + (order.ulasan ? ' · "' + order.ulasan + '"' : '') + '</div>' : '';
       var actions = order.status==='menunggu'
         ? '<div class="order-actions"><button class="btn-konfirmasi" data-id="'+order.id+'" data-action="dikonfirmasi">✅ Konfirmasi</button><button class="btn-tolak" data-id="'+order.id+'" data-action="ditolak">❌ Tolak</button></div>'
         : '';
@@ -341,7 +391,8 @@
           '<div class="order-detail">📧 Email: <strong>'+(order.email||'—')+'</strong></div>'+
           '<div class="order-detail">🎮 ID Player: <strong>'+(order.idPlayer||'—')+'</strong> · 📦 '+(order.paket||'—')+'</div>'+
           '<div class="order-detail">🕐 '+time+'</div>'+
-          '<div class="order-trx">🔖 ID Transaksi: <strong>'+(order.idTransaksi||'—')+'</strong>'+(order.promoCode?' · 🎁 Promo: '+order.promoCode:'')+'</div>'+
+          '<div class="order-trx">🔖 ID Transaksi: <strong>'+(order.idTransaksi||'—')+'</strong>'+(order.promoCode?' · 🎁 '+order.promoCode:'')+'</div>'+
+          ratingHtml+
         '</div>'+
         '<div class="order-right">'+
           '<div class="order-price">Rp'+(order.totalBayar||0).toLocaleString('id-ID')+'</div>'+
@@ -351,8 +402,7 @@
       '</div>';
     }).join('');
 
-    // Pasang event listener ke tombol konfirmasi/tolak
-    document.querySelectorAll('.btn-konfirmasi, .btn-tolak').forEach(function(btn) {
+    document.querySelectorAll('.btn-konfirmasi,.btn-tolak').forEach(function(btn) {
       btn.addEventListener('click', function() {
         updateStatus(btn.getAttribute('data-id'), btn.getAttribute('data-action'));
       });
@@ -366,55 +416,23 @@
     }).then(function() {
       var idx = allOrders.findIndex(function(o){ return o.id===orderId; });
       if (idx !== -1) allOrders[idx].status = status;
-      updateStats();
-      renderOrders();
-      showToast(status==='dikonfirmasi' ? '✅ Order berhasil dikonfirmasi!' : '❌ Order ditolak.');
-    }).catch(function(e) {
-      showToast('❌ Gagal update status!');
-      console.error(e);
-    });
+      updateStats(); renderOrders();
+      showToast(status==='dikonfirmasi' ? '✅ Order dikonfirmasi!' : '❌ Order ditolak.');
+    }).catch(function(e){ showToast('❌ Gagal update!'); console.error(e); });
   }
 
-
-  // ===== PROMO MANAGER =====
-  var promoFormOpen = false;
-
-  document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById('btn-toggle-form').addEventListener('click', function() {
-      promoFormOpen = !promoFormOpen;
-      document.getElementById('promo-form').className = 'promo-form' + (promoFormOpen ? ' open' : '');
-      this.textContent = promoFormOpen ? '✕ Tutup' : '+ Tambah Kode';
-    });
-    document.getElementById('btn-save-promo').addEventListener('click', savePromo);
-    document.getElementById('inp-kode').addEventListener('input', function() {
-      this.value = this.value.toUpperCase().replace(/\s/g, '');
-    });
-    document.getElementById('inp-tipe').addEventListener('change', function() {
-      var nilaiInput = document.getElementById('inp-nilai');
-      if (this.value === 'gratis') {
-        nilaiInput.value = 100;
-        nilaiInput.disabled = true;
-      } else {
-        nilaiInput.disabled = false;
-        nilaiInput.value = '';
-      }
-    });
-    loadPromos();
-  });
-
+  // PROMO MANAGER
   function loadPromos() {
     var el = document.getElementById('promo-list');
     el.innerHTML = '<div class="promo-empty">Memuat...</div>';
-    db.collection('promoCodes').orderBy('createdAt', 'desc').get()
+    db.collection('promoCodes').orderBy('createdAt','desc').get()
       .then(function(snap) {
         if (snap.empty) { el.innerHTML = '<div class="promo-empty">Belum ada kode promo. Tambahkan di atas!</div>'; return; }
         el.innerHTML = snap.docs.map(function(doc) {
           var d = doc.data();
-          var discLabel = d.tipe === 'flat' ? 'Rp' + d.nilai.toLocaleString('id-ID') + ' off' : d.nilai + '% off';
-          var minMax = '';
-          if (d.minHarga > 0) minMax += ' · Min: Rp' + d.minHarga.toLocaleString('id-ID');
-          if (d.maxHarga > 0) minMax += ' · Max: Rp' + d.maxHarga.toLocaleString('id-ID');
-          var isExp = d.isExpired === true;
+          var discLabel = d.tipe==='flat' ? 'Rp'+d.nilai.toLocaleString('id-ID')+' off' : d.nilai+'% off';
+          var minMax = (d.minHarga>0?' · Min: Rp'+d.minHarga.toLocaleString('id-ID'):'')+(d.maxHarga>0?' · Max: Rp'+d.maxHarga.toLocaleString('id-ID'):'');
+          var isExp = d.isExpired===true;
           return '<div class="promo-row-item">'+
             '<div class="promo-code-badge">'+d.kode+'</div>'+
             '<div class="promo-info">'+
@@ -429,25 +447,21 @@
           '</div>';
         }).join('');
 
-        // Event listeners
         document.querySelectorAll('.btn-toggle-expired').forEach(function(btn) {
           btn.addEventListener('click', function() {
-            var newVal = btn.getAttribute('data-expired') === 'true' ? false : true;
-            db.collection('promoCodes').doc(btn.getAttribute('data-id')).update({isExpired: newVal})
-              .then(function() { loadPromos(); showToast(newVal ? '🔒 Kode dinonaktifkan!' : '✅ Kode diaktifkan!'); });
+            var newVal = btn.getAttribute('data-expired')==='true' ? false : true;
+            db.collection('promoCodes').doc(btn.getAttribute('data-id')).update({isExpired:newVal})
+              .then(function(){ loadPromos(); showToast(newVal?'🔒 Kode dinonaktifkan!':'✅ Kode diaktifkan!'); });
           });
         });
         document.querySelectorAll('.btn-hapus-promo').forEach(function(btn) {
           btn.addEventListener('click', function() {
             if (!confirm('Hapus kode promo ini?')) return;
             db.collection('promoCodes').doc(btn.getAttribute('data-id')).delete()
-              .then(function() { loadPromos(); showToast('🗑 Kode promo dihapus!'); });
+              .then(function(){ loadPromos(); showToast('🗑 Kode promo dihapus!'); });
           });
         });
-      }).catch(function(e) {
-        el.innerHTML = '<div class="promo-empty">Gagal memuat promo.</div>';
-        console.error(e);
-      });
+      }).catch(function(e){ el.innerHTML = '<div class="promo-empty">Gagal memuat promo.</div>'; console.error(e); });
   }
 
   function savePromo() {
@@ -457,41 +471,27 @@
     var isExpired = document.getElementById('inp-expired').value === 'true';
     var minHarga = parseFloat(document.getElementById('inp-min').value) || 0;
     var maxHarga = parseFloat(document.getElementById('inp-max').value) || 0;
-
     if (!kode) { showToast('⚠️ Isi kode promo dulu!'); return; }
     if (tipe !== 'gratis' && (!nilai || nilai <= 0)) { showToast('⚠️ Isi nilai diskon!'); return; }
     if (tipe === 'persen' && nilai > 100) { showToast('⚠️ Diskon persen max 100!'); return; }
     if (maxHarga > 0 && minHarga > maxHarga) { showToast('⚠️ Min tidak boleh lebih dari Max!'); return; }
     if (tipe === 'gratis') nilai = 100;
-
     var btn = document.getElementById('btn-save-promo');
     btn.disabled = true; btn.textContent = 'Menyimpan...';
-
     db.collection('promoCodes').add({
-      kode: kode,
-      tipe: tipe,
-      nilai: nilai,
-      isExpired: isExpired,
-      minHarga: minHarga,
-      maxHarga: maxHarga,
+      kode: kode, tipe: tipe, nilai: nilai,
+      isExpired: isExpired, minHarga: minHarga, maxHarga: maxHarga,
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
     }).then(function() {
       showToast('✅ Kode promo berhasil disimpan!');
-      document.getElementById('inp-kode').value = '';
-      document.getElementById('inp-nilai').value = '';
+      ['inp-kode','inp-nilai','inp-min','inp-max'].forEach(function(id){ document.getElementById(id).value=''; });
       document.getElementById('inp-tipe').value = 'persen';
       document.getElementById('inp-expired').value = 'false';
-      document.getElementById('inp-min').value = '';
-      document.getElementById('inp-max').value = '';
       document.getElementById('inp-nilai').disabled = false;
       loadPromos();
-    }).catch(function(e) {
-      showToast('❌ Gagal menyimpan!'); console.error(e);
-    }).finally(function() {
-      btn.disabled = false; btn.textContent = '💾 Simpan';
-    });
+    }).catch(function(e){ showToast('❌ Gagal menyimpan!'); console.error(e); })
+    .finally(function(){ btn.disabled=false; btn.textContent='💾 Simpan'; });
   }
-  // ===== END PROMO MANAGER =====
 
   function showToast(msg) {
     var t = document.getElementById('toast');
