@@ -135,6 +135,21 @@
     footer{position:relative;z-index:1;text-align:center;padding:20px;border-top:2px solid var(--border);color:var(--muted);font-size:13px;font-weight:700;background:#fff;}
     footer span{color:var(--green);}
     @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+    /* RATING OVERVIEW */
+    .rating-overview{position:relative;z-index:1;max-width:680px;margin:0 auto 0;padding:0 16px 24px;}
+    .rating-box{background:#fff;border:2px solid var(--border);border-radius:16px;padding:20px 24px;box-shadow:var(--shadow);display:flex;align-items:center;gap:24px;}
+    .rating-score{text-align:center;flex-shrink:0;}
+    .rating-big{font-family:'Bebas Neue',sans-serif;font-size:56px;line-height:1;color:var(--darkgreen);letter-spacing:2px;}
+    .rating-stars-display{color:#FFB300;font-size:18px;letter-spacing:2px;margin:4px 0;}
+    .rating-total{font-size:12px;font-weight:700;color:var(--muted);}
+    .rating-bars{flex:1;}
+    .rating-bar-row{display:flex;align-items:center;gap:8px;margin-bottom:7px;}
+    .rating-bar-row:last-child{margin-bottom:0;}
+    .rating-bar-label{font-size:12px;font-weight:800;color:var(--muted);width:12px;text-align:right;flex-shrink:0;}
+    .rating-bar-track{flex:1;height:8px;background:#E8F5E9;border-radius:99px;overflow:hidden;}
+    .rating-bar-fill{height:100%;background:linear-gradient(90deg,#FFB300,#FF8F00);border-radius:99px;transition:width .6s ease;}
+    .rating-bar-count{font-size:11px;font-weight:800;color:var(--muted);width:28px;text-align:right;flex-shrink:0;}
+    .rating-loading{text-align:center;padding:20px;color:var(--muted);font-weight:700;font-size:13px;}
     @keyframes popIn{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:scale(1)}}
     @keyframes spin{to{transform:rotate(360deg)}}
   </style>
@@ -150,6 +165,13 @@
   <div class="hero-tag">⚡ Proses Cepat & Terpercaya</div>
   <h1>TOP UP<br/><span class="accent">BUSSID</span></h1>
   <p>Top up uang BUSSID mudah, cepat, dan harga terjangkau</p>
+</div>
+
+<!-- RATING OVERVIEW -->
+<div class="rating-overview">
+  <div class="rating-box" id="rating-overview-box">
+    <div class="rating-loading">⭐ Memuat rating...</div>
+  </div>
 </div>
 
 <div class="container">
@@ -703,6 +725,62 @@
     document.getElementById('tab-' + tab).classList.add('active');
     document.getElementById('panel-' + tab).classList.add('active');
   }
+
+  // ===== RATING OVERVIEW =====
+  function loadRatingOverview() {
+    db.collection('orders').where('rating', '!=', null).onSnapshot(function(snap) {
+        if (snap.empty) {
+          document.getElementById('rating-overview-box').innerHTML =
+            '<div style="text-align:center;color:var(--muted);font-weight:700;font-size:13px;padding:10px">⭐ Belum ada rating. Jadilah yang pertama!</div>';
+          return;
+        }
+        var counts = {1:0,2:0,3:0,4:0,5:0};
+        var total = 0;
+        var sum = 0;
+        snap.docs.forEach(function(doc) {
+          var r = doc.data().rating;
+          if (r >= 1 && r <= 5) { counts[r]++; total++; sum += r; }
+        });
+        var avg = total > 0 ? (sum / total).toFixed(1) : '0.0';
+        var avgNum = parseFloat(avg);
+
+        // Generate stars (full, half, empty)
+        var starsHtml = '';
+        for (var i = 1; i <= 5; i++) {
+          if (avgNum >= i) starsHtml += '★';
+          else if (avgNum >= i - 0.5) starsHtml += '½';
+          else starsHtml += '☆';
+        }
+
+        var barsHtml = '';
+        for (var s = 5; s >= 1; s--) {
+          var pct = total > 0 ? Math.round((counts[s] / total) * 100) : 0;
+          barsHtml +=
+            '<div class="rating-bar-row">' +
+              '<div class="rating-bar-label">' + s + '</div>' +
+              '<div class="rating-bar-track"><div class="rating-bar-fill" style="width:' + pct + '%"></div></div>' +
+              '<div class="rating-bar-count">' + counts[s] + '</div>' +
+            '</div>';
+        }
+
+        document.getElementById('rating-overview-box').innerHTML =
+          '<div class="rating-score">' +
+            '<div class="rating-big">' + avg.replace('.', ',') + '</div>' +
+            '<div class="rating-stars-display">' + starsHtml + '</div>' +
+            '<div class="rating-total">' + total.toLocaleString('id-ID') + ' ulasan</div>' +
+          '</div>' +
+          '<div class="rating-bars">' + barsHtml + '</div>';
+      }, function(e) {
+        document.getElementById('rating-overview-box').innerHTML =
+          '<div style="text-align:center;color:var(--muted);font-weight:700;font-size:13px;padding:10px">⭐ Rating tidak tersedia.</div>';
+        console.error(e);
+      });
+  }
+
+  // Load rating overview on page load
+  document.addEventListener('DOMContentLoaded', function() {
+    loadRatingOverview();
+  });
 
   function showToast(msg) {
     var t = document.getElementById('toast');
