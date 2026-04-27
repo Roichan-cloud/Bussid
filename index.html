@@ -57,7 +57,7 @@
     .promo-input:focus{border-color:var(--green);}
     .promo-input::placeholder{text-transform:none;letter-spacing:0;color:#B2DFDB;font-weight:600;}
     .promo-btn{background:linear-gradient(135deg,var(--green),var(--lime2));border:none;color:#fff;font-family:'Nunito',sans-serif;font-weight:900;font-size:13px;padding:12px 18px;border-radius:10px;cursor:pointer;transition:all .2s;white-space:nowrap;}
-    .promo-btn:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(0,200,83,.3);}
+    .promo-btn:hover{transform:translateY(-1px);}
     .promo-msg{font-size:12px;font-weight:700;margin-top:8px;display:none;}
     .promo-msg.success{color:var(--green);display:block;}
     .promo-msg.error{color:#E53935;display:block;}
@@ -66,6 +66,12 @@
     .qris-title{font-weight:900;font-size:16px;color:var(--darkgreen);margin-bottom:6px;}
     .qris-sub{font-size:13px;color:var(--muted);font-weight:600;}
     .trx-note{background:linear-gradient(135deg,rgba(255,193,7,.1),rgba(255,152,0,.05));border:2px solid rgba(255,193,7,.3);border-radius:10px;padding:12px 14px;font-size:13px;font-weight:700;color:#E65100;margin-bottom:16px;}
+    /* TIMER */
+    .timer-box{background:linear-gradient(135deg,rgba(229,57,53,.08),rgba(229,57,53,.03));border:2px solid rgba(229,57,53,.3);border-radius:12px;padding:14px 18px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;}
+    .timer-label{font-weight:800;font-size:13px;color:#C62828;}
+    .timer-count{font-family:'Bebas Neue',sans-serif;font-size:28px;color:#E53935;letter-spacing:2px;}
+    .timer-count.urgent{animation:pulse .5s infinite alternate;}
+    @keyframes pulse{from{opacity:1}to{opacity:.5}}
     .summary-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);font-size:14px;}
     .summary-row:last-child{border-bottom:none;}
     .summary-row .label{color:var(--muted);font-weight:700;}
@@ -76,18 +82,31 @@
     .btn-primary{width:100%;padding:16px;background:linear-gradient(135deg,var(--green),var(--lime2));color:#fff;font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;border:none;border-radius:12px;cursor:pointer;transition:all .2s;margin-top:16px;box-shadow:0 4px 20px rgba(0,200,83,.3);}
     .btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,200,83,.4);}
     .btn-primary:disabled{opacity:.6;cursor:not-allowed;transform:none;}
+    /* CEK STATUS */
+    .status-result{background:var(--bg);border:2px solid var(--border);border-radius:12px;padding:16px;margin-top:12px;display:none;}
+    .status-result.show{display:block;}
+    .status-badge{display:inline-block;font-weight:900;font-size:13px;padding:6px 14px;border-radius:99px;margin-bottom:10px;}
+    /* RATING */
+    .stars{display:flex;gap:8px;justify-content:center;margin:12px 0;}
+    .star{font-size:36px;cursor:pointer;transition:transform .15s;filter:grayscale(1);opacity:.4;}
+    .star.active{filter:none;opacity:1;transform:scale(1.15);}
+    .rating-textarea{width:100%;background:var(--bg);border:2px solid var(--border);border-radius:10px;padding:12px 14px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:600;color:var(--text);outline:none;resize:none;min-height:80px;margin-top:8px;transition:border-color .2s;}
+    .rating-textarea:focus{border-color:var(--green);}
+    /* RIWAYAT */
     .riwayat-item{display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid var(--border);}
     .riwayat-item:last-child{border-bottom:none;}
     .riwayat-icon{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,rgba(0,200,83,.1),rgba(57,255,20,.05));border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
     .riwayat-info{flex:1;min-width:0;}
     .riwayat-name{font-weight:800;font-size:14px;color:var(--text);}
     .riwayat-detail{font-size:12px;color:var(--muted);font-weight:600;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .riwayat-rating{font-size:11px;color:#F57F17;font-weight:700;margin-top:2px;}
     .riwayat-status{font-weight:900;font-size:11px;padding:4px 10px;border-radius:99px;white-space:nowrap;flex-shrink:0;}
     .status-menunggu{background:rgba(255,193,7,.15);color:#F57F17;}
     .status-dikonfirmasi{background:rgba(0,200,83,.15);color:var(--darkgreen);}
     .status-ditolak{background:rgba(229,57,53,.1);color:#C62828;}
+    .status-dibatalkan{background:rgba(100,100,100,.1);color:#666;}
     .tabs{display:flex;gap:4px;margin-bottom:20px;background:#fff;border:2px solid var(--border);border-radius:12px;padding:4px;box-shadow:var(--shadow);}
-    .tab{flex:1;padding:10px;text-align:center;cursor:pointer;border-radius:9px;font-weight:800;font-size:13px;color:var(--muted);transition:all .2s;}
+    .tab{flex:1;padding:10px;text-align:center;cursor:pointer;border-radius:9px;font-weight:800;font-size:12px;color:var(--muted);transition:all .2s;}
     .tab.active{background:linear-gradient(135deg,var(--green),var(--lime2));color:#fff;box-shadow:0 2px 10px rgba(0,200,83,.3);}
     .panel{display:none;}
     .panel.active{display:block;}
@@ -95,7 +114,7 @@
     .spinner{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--green);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 12px;}
     .modal-overlay{position:fixed;inset:0;background:rgba(0,80,30,.4);backdrop-filter:blur(8px);z-index:200;display:none;align-items:center;justify-content:center;padding:20px;}
     .modal-overlay.open{display:flex;}
-    .modal{background:#fff;border:2px solid var(--border);border-radius:20px;padding:32px 24px;max-width:400px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,100,40,.2);animation:popIn .3s ease;}
+    .modal{background:#fff;border:2px solid var(--border);border-radius:20px;padding:32px 24px;max-width:420px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,100,40,.2);animation:popIn .3s ease;max-height:90vh;overflow-y:auto;}
     .modal-icon{font-size:56px;margin-bottom:12px;}
     .modal h2{font-family:'Bebas Neue',sans-serif;font-size:30px;letter-spacing:2px;color:var(--darkgreen);margin-bottom:6px;}
     .modal p{color:var(--muted);font-size:13px;font-weight:600;line-height:1.6;}
@@ -104,8 +123,10 @@
     .modal-detail .row:last-child{border-bottom:none;}
     .modal-detail .row .k{color:var(--muted);font-weight:700;}
     .modal-detail .row .v{font-weight:800;color:var(--text);}
-    .modal-close{width:100%;padding:14px;background:linear-gradient(135deg,var(--green),var(--lime2));color:#fff;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;border:none;border-radius:10px;cursor:pointer;transition:all .2s;box-shadow:0 4px 16px rgba(0,200,83,.3);}
+    .modal-close{width:100%;padding:14px;background:linear-gradient(135deg,var(--green),var(--lime2));color:#fff;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;border:none;border-radius:10px;cursor:pointer;transition:all .2s;box-shadow:0 4px 16px rgba(0,200,83,.3);margin-top:8px;}
     .modal-close:hover{transform:translateY(-1px);}
+    /* TIMEOUT MODAL */
+    .modal-timeout .modal-icon{font-size:56px;}
     .toast{position:fixed;bottom:24px;right:16px;background:#fff;border:2px solid var(--green);border-radius:12px;padding:12px 18px;font-size:13px;font-weight:800;color:var(--darkgreen);z-index:300;transform:translateY(100px);opacity:0;transition:all .3s ease;box-shadow:0 4px 20px rgba(0,200,83,.2);max-width:280px;}
     .toast.show{transform:translateY(0);opacity:1;}
     .empty-state{text-align:center;padding:40px;color:var(--muted);}
@@ -134,6 +155,7 @@
 <div class="container">
   <div class="tabs">
     <div class="tab active" id="tab-topup">🎮 Top Up</div>
+    <div class="tab" id="tab-cek">🔔 Cek Status</div>
     <div class="tab" id="tab-riwayat">📋 Riwayat</div>
   </div>
 
@@ -185,7 +207,6 @@
           <div class="nominal-item" data-idx="7"><div class="nominal-uang">2 M</div><div class="nominal-sub">Uang Bussid</div><div class="nominal-price">Rp60.000</div></div>
         </div>
       </div>
-
       <div class="card">
         <div class="card-title">Kode Promo</div>
         <div class="promo-row">
@@ -204,8 +225,14 @@
         <div class="qris-title">Scan QRIS untuk Bayar</div>
         <div class="qris-sub">Bayar sesuai total, lalu masukkan ID transaksi</div>
       </div>
-      <div class="trx-note">💡 Setelah bayar, salin <strong>ID Transaksi / Nomor Referensi</strong> dari bukti bayar, lalu masukkan di bawah.</div>
 
+      <!-- TIMER -->
+      <div class="timer-box">
+        <div class="timer-label">⏰ Batas waktu pembayaran</div>
+        <div class="timer-count" id="timer-display">05:00</div>
+      </div>
+
+      <div class="trx-note">💡 Setelah bayar, salin <strong>ID Transaksi / Nomor Referensi</strong> dari bukti bayar, lalu masukkan di bawah.</div>
       <div class="card">
         <div class="card-title">Ringkasan Pesanan</div>
         <div class="summary-row"><span class="label">Email Bussid</span><span class="val" id="sum-email">—</span></div>
@@ -214,7 +241,6 @@
         <div class="summary-row" id="sum-promo-row" style="display:none"><span class="label">Diskon</span><span class="val discount-val" id="sum-discount">—</span></div>
         <div class="summary-row total"><span class="label">Total</span><span class="val" id="sum-total">—</span></div>
       </div>
-
       <div class="card">
         <div class="card-title">ID Transaksi</div>
         <div class="form-group">
@@ -223,6 +249,19 @@
         </div>
       </div>
       <button class="btn-primary" id="btn-submit">🚌 KONFIRMASI PESANAN</button>
+    </div>
+  </div>
+
+  <!-- CEK STATUS PANEL -->
+  <div class="panel" id="panel-cek">
+    <div class="card">
+      <div class="card-title">🔔 Cek Status Order</div>
+      <div class="form-group">
+        <label>ID Transaksi</label>
+        <input type="text" id="inp-cek-trx" placeholder="Masukkan ID Transaksi kamu..."/>
+      </div>
+      <button class="btn-primary" id="btn-cek" style="margin-top:12px">🔍 CEK STATUS</button>
+      <div class="status-result" id="status-result"></div>
     </div>
   </div>
 
@@ -245,7 +284,7 @@
   </div>
 </div>
 
-<!-- MODAL -->
+<!-- MODAL SUKSES -->
 <div class="modal-overlay" id="modal">
   <div class="modal">
     <div class="modal-icon">✅</div>
@@ -255,6 +294,36 @@
     <button class="modal-close" id="btn-modal-close">TUTUP</button>
   </div>
 </div>
+
+<!-- MODAL TIMEOUT -->
+<div class="modal-overlay" id="modal-timeout">
+  <div class="modal modal-timeout">
+    <div class="modal-icon">⏰</div>
+    <h2>WAKTU HABIS!</h2>
+    <p>Batas waktu pembayaran sudah habis. Silakan order ulang dan selesaikan pembayaran dalam 5 menit.</p>
+    <button class="modal-close" id="btn-timeout-close">ORDER ULANG</button>
+  </div>
+</div>
+
+<!-- MODAL RATING -->
+<div class="modal-overlay" id="modal-rating">
+  <div class="modal">
+    <div class="modal-icon">⭐</div>
+    <h2>BERI RATING!</h2>
+    <p>Bagaimana pengalaman top up kamu? Berikan penilaian untuk membantu kami berkembang.</p>
+    <div class="stars" id="stars">
+      <span class="star" data-val="1">⭐</span>
+      <span class="star" data-val="2">⭐</span>
+      <span class="star" data-val="3">⭐</span>
+      <span class="star" data-val="4">⭐</span>
+      <span class="star" data-val="5">⭐</span>
+    </div>
+    <textarea class="rating-textarea" id="rating-text" placeholder="Tulis ulasan kamu (opsional)..." maxlength="200"></textarea>
+    <button class="modal-close" id="btn-kirim-rating" style="background:linear-gradient(135deg,#FFB300,#FF8F00)">⭐ KIRIM RATING</button>
+    <button class="modal-close" id="btn-skip-rating" style="background:var(--muted);box-shadow:none;margin-top:8px">Lewati</button>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 <footer>&copy; 2025 <span>Buahlilsid Store</span> — Top Up BUSSID Terpercaya 🚌</footer>
 
@@ -282,13 +351,18 @@
 
   var selectedNominal = null;
   var appliedPromo = null;
+  var timerInterval = null;
+  var timerSeconds = 300;
+  var selectedRating = 0;
+  var lastOrderId = null;
 
   document.addEventListener('DOMContentLoaded', function() {
-    // Tab switch
-    document.getElementById('tab-topup').addEventListener('click', function() { switchTab('topup'); });
-    document.getElementById('tab-riwayat').addEventListener('click', function() { switchTab('riwayat'); });
+    // Tabs
+    document.getElementById('tab-topup').addEventListener('click', function(){ switchTab('topup'); });
+    document.getElementById('tab-cek').addEventListener('click', function(){ switchTab('cek'); });
+    document.getElementById('tab-riwayat').addEventListener('click', function(){ switchTab('riwayat'); });
 
-    // Nominal select
+    // Nominal
     document.querySelectorAll('.nominal-item').forEach(function(el) {
       el.addEventListener('click', function() {
         document.querySelectorAll('.nominal-item').forEach(function(e){ e.classList.remove('selected'); });
@@ -297,20 +371,52 @@
       });
     });
 
-    // Buttons
+    // Steps
     document.getElementById('btn-step2').addEventListener('click', goStep2);
     document.getElementById('btn-step3').addEventListener('click', goStep3);
     document.getElementById('btn-promo').addEventListener('click', applyPromo);
     document.getElementById('btn-submit').addEventListener('click', submitOrder);
     document.getElementById('btn-modal-close').addEventListener('click', closeModal);
+    document.getElementById('btn-timeout-close').addEventListener('click', closeTimeout);
     document.getElementById('btn-cari').addEventListener('click', cariRiwayat);
+    document.getElementById('btn-cek').addEventListener('click', cekStatus);
 
-    // Uppercase promo input
-    document.getElementById('promo-input').addEventListener('input', function() {
+    // Promo uppercase
+    document.getElementById('promo-input').addEventListener('input', function(){
       this.value = this.value.toUpperCase();
+    });
+
+    // Rating stars
+    document.querySelectorAll('.star').forEach(function(star) {
+      star.addEventListener('click', function() {
+        selectedRating = parseInt(star.getAttribute('data-val'));
+        document.querySelectorAll('.star').forEach(function(s, i) {
+          s.classList.toggle('active', i < selectedRating);
+        });
+      });
+      star.addEventListener('mouseover', function() {
+        var val = parseInt(star.getAttribute('data-val'));
+        document.querySelectorAll('.star').forEach(function(s, i){
+          s.style.opacity = i < val ? '1' : '0.4';
+          s.style.filter = i < val ? 'none' : 'grayscale(1)';
+        });
+      });
+      star.addEventListener('mouseout', function() {
+        document.querySelectorAll('.star').forEach(function(s, i){
+          s.classList.toggle('active', i < selectedRating);
+          if (!s.classList.contains('active')) { s.style.opacity = '0.4'; s.style.filter = 'grayscale(1)'; }
+          else { s.style.opacity = '1'; s.style.filter = 'none'; }
+        });
+      });
+    });
+
+    document.getElementById('btn-kirim-rating').addEventListener('click', kirimRating);
+    document.getElementById('btn-skip-rating').addEventListener('click', function(){
+      document.getElementById('modal-rating').classList.remove('open');
     });
   });
 
+  // ===== STEP FUNCTIONS =====
   function goStep2() {
     var email = document.getElementById('inp-email').value.trim();
     var idplayer = document.getElementById('inp-idplayer').value.trim();
@@ -320,15 +426,52 @@
 
   function goStep3() {
     if (!selectedNominal) { showToast('⚠️ Pilih paket dulu!'); return; }
-    var email = document.getElementById('inp-email').value.trim();
-    var idplayer = document.getElementById('inp-idplayer').value.trim();
-    document.getElementById('sum-email').textContent = email;
-    document.getElementById('sum-idplayer').textContent = idplayer;
+    document.getElementById('sum-email').textContent = document.getElementById('inp-email').value.trim();
+    document.getElementById('sum-idplayer').textContent = document.getElementById('inp-idplayer').value.trim();
     document.getElementById('sum-paket').textContent = selectedNominal.uang + ' Uang Bussid';
     updateTotal();
     setStep(3);
+    startTimer();
   }
 
+  // ===== TIMER =====
+  function startTimer() {
+    clearInterval(timerInterval);
+    timerSeconds = 300;
+    updateTimerDisplay();
+    timerInterval = setInterval(function() {
+      timerSeconds--;
+      updateTimerDisplay();
+      if (timerSeconds <= 0) {
+        clearInterval(timerInterval);
+        document.getElementById('modal-timeout').classList.add('open');
+      }
+    }, 1000);
+  }
+
+  function updateTimerDisplay() {
+    var m = Math.floor(timerSeconds / 60);
+    var s = timerSeconds % 60;
+    var display = (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+    var el = document.getElementById('timer-display');
+    el.textContent = display;
+    el.className = 'timer-count' + (timerSeconds <= 60 ? ' urgent' : '');
+  }
+
+  function closeTimeout() {
+    document.getElementById('modal-timeout').classList.remove('open');
+    clearInterval(timerInterval);
+    selectedNominal = null; appliedPromo = null;
+    document.getElementById('inp-email').value = '';
+    document.getElementById('inp-idplayer').value = '';
+    document.getElementById('inp-trxid').value = '';
+    document.getElementById('promo-input').value = '';
+    document.getElementById('promo-msg').className = 'promo-msg';
+    document.querySelectorAll('.nominal-item').forEach(function(e){ e.classList.remove('selected'); });
+    setStep(1);
+  }
+
+  // ===== PROMO =====
   function applyPromo() {
     if (!selectedNominal) { showToast('⚠️ Pilih paket dulu!'); return; }
     var code = document.getElementById('promo-input').value.trim().toUpperCase();
@@ -340,25 +483,34 @@
         if (snap.empty) {
           appliedPromo = null;
           msg.textContent = '❌ Kode promo tidak valid.';
-          msg.className = 'promo-msg error';
-          return;
+          msg.className = 'promo-msg error'; return;
         }
         var d = snap.docs[0].data();
         if (d.isExpired) {
           appliedPromo = null;
           msg.textContent = '⌛ Kode promo ini sudah kadaluarsa.';
-          msg.className = 'promo-msg error';
-          return;
+          msg.className = 'promo-msg error'; return;
         }
-        var discLabel = d.tipe === 'flat'
-          ? 'Potongan Rp' + d.nilai.toLocaleString('id-ID')
-          : 'Diskon ' + d.nilai + '%';
+        var harga = selectedNominal.harga;
+        var minH = d.minHarga || 0;
+        var maxH = d.maxHarga || 0;
+        if (minH > 0 && harga < minH) {
+          appliedPromo = null;
+          msg.textContent = '⚠️ Berlaku untuk pembelian minimal Rp' + minH.toLocaleString('id-ID') + '.';
+          msg.className = 'promo-msg error'; return;
+        }
+        if (maxH > 0 && harga > maxH) {
+          appliedPromo = null;
+          msg.textContent = '⚠️ Berlaku untuk pembelian maksimal Rp' + maxH.toLocaleString('id-ID') + '.';
+          msg.className = 'promo-msg error'; return;
+        }
+        var discLabel = d.tipe === 'flat' ? 'Potongan Rp' + d.nilai.toLocaleString('id-ID') : 'Diskon ' + d.nilai + '%';
         appliedPromo = {code: code, disc: d.nilai, flat: d.tipe === 'flat', label: discLabel};
         msg.textContent = '✅ Promo berhasil! ' + discLabel;
         msg.className = 'promo-msg success';
         showToast('🎁 Kode promo berhasil!');
       }).catch(function(e) {
-        msg.textContent = '❌ Gagal memeriksa kode. Coba lagi!';
+        msg.textContent = '❌ Gagal memeriksa kode.';
         msg.className = 'promo-msg error';
         console.error(e);
       });
@@ -385,11 +537,13 @@
     }
   }
 
+  // ===== SUBMIT ORDER =====
   function submitOrder() {
     var trxId = document.getElementById('inp-trxid').value.trim();
     if (!trxId) { showToast('⚠️ Masukkan ID Transaksi dulu!'); return; }
     var btn = document.getElementById('btn-submit');
     btn.disabled = true; btn.textContent = 'MEMPROSES...';
+    clearInterval(timerInterval);
     var email = document.getElementById('inp-email').value.trim();
     var idplayer = document.getElementById('inp-idplayer').value.trim();
     var total = calcTotal();
@@ -403,8 +557,11 @@
       promoCode: appliedPromo ? appliedPromo.code : null,
       idTransaksi: trxId,
       status: 'menunggu',
+      rating: null,
+      ulasan: null,
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    }).then(function() {
+    }).then(function(docRef) {
+      lastOrderId = docRef.id;
       document.getElementById('modal-detail').innerHTML =
         '<div class="row"><span class="k">Email Bussid</span><span class="v">' + email + '</span></div>' +
         '<div class="row"><span class="k">ID Player</span><span class="v">' + idplayer + '</span></div>' +
@@ -433,6 +590,64 @@
     setStep(1);
   }
 
+  // ===== CEK STATUS =====
+  function cekStatus() {
+    var trxId = document.getElementById('inp-cek-trx').value.trim();
+    if (!trxId) { showToast('⚠️ Masukkan ID Transaksi dulu!'); return; }
+    var el = document.getElementById('status-result');
+    el.innerHTML = '<div class="loading"><div class="spinner"></div>Mencari...</div>';
+    el.classList.add('show');
+    db.collection('orders').where('idTransaksi', '==', trxId).limit(1).get()
+      .then(function(snap) {
+        if (snap.empty) {
+          el.innerHTML = '<div style="text-align:center;color:var(--muted);font-weight:700;padding:10px">❌ ID Transaksi tidak ditemukan.</div>';
+          return;
+        }
+        var d = snap.docs[0].data();
+        var sc = d.status === 'dikonfirmasi' ? '#00C853' : d.status === 'ditolak' ? '#E53935' : d.status === 'dibatalkan' ? '#888' : '#F57F17';
+        var sl = d.status === 'dikonfirmasi' ? '✅ Dikonfirmasi' : d.status === 'ditolak' ? '❌ Ditolak' : d.status === 'dibatalkan' ? '🚫 Dibatalkan' : '⏳ Menunggu Konfirmasi';
+        var time = d.createdAt ? new Date(d.createdAt.seconds * 1000).toLocaleString('id-ID') : '—';
+        el.innerHTML =
+          '<div class="status-badge" style="background:rgba(0,0,0,.06);color:' + sc + '">' + sl + '</div>' +
+          '<div style="font-size:13px;color:var(--muted);font-weight:600;line-height:1.8">' +
+          '📧 <b>' + (d.email || '—') + '</b><br>' +
+          '🎮 ID: <b>' + (d.idPlayer || '—') + '</b><br>' +
+          '📦 <b>' + (d.paket || '—') + '</b><br>' +
+          '💰 Total: <b>Rp' + (d.totalBayar || 0).toLocaleString('id-ID') + '</b><br>' +
+          '🕐 ' + time +
+          '</div>';
+
+        // Jika dikonfirmasi dan belum ada rating, tampilkan modal rating
+        if (d.status === 'dikonfirmasi' && !d.rating) {
+          lastOrderId = snap.docs[0].id;
+          setTimeout(function() {
+            document.getElementById('modal-rating').classList.add('open');
+          }, 800);
+        }
+      }).catch(function(e) {
+        el.innerHTML = '<div style="text-align:center;color:#E53935;font-weight:700;padding:10px">⚠️ Gagal memuat. Coba lagi.</div>';
+        console.error(e);
+      });
+  }
+
+  // ===== RATING =====
+  function kirimRating() {
+    if (!selectedRating) { showToast('⚠️ Pilih bintang dulu!'); return; }
+    if (!lastOrderId) { document.getElementById('modal-rating').classList.remove('open'); return; }
+    var ulasan = document.getElementById('rating-text').value.trim();
+    db.collection('orders').doc(lastOrderId).update({
+      rating: selectedRating,
+      ulasan: ulasan || null
+    }).then(function() {
+      document.getElementById('modal-rating').classList.remove('open');
+      showToast('⭐ Terima kasih atas rating kamu!');
+      selectedRating = 0;
+      document.querySelectorAll('.star').forEach(function(s){ s.classList.remove('active'); s.style.opacity='0.4'; s.style.filter='grayscale(1)'; });
+      document.getElementById('rating-text').value = '';
+    }).catch(function(e) { showToast('❌ Gagal mengirim rating.'); console.error(e); });
+  }
+
+  // ===== RIWAYAT =====
   function cariRiwayat() {
     var email = document.getElementById('inp-cari-email').value.trim();
     if (!email) { showToast('⚠️ Masukkan Email Bussid dulu!'); return; }
@@ -452,13 +667,15 @@
         el.innerHTML = docs.map(function(doc) {
           var d = doc.data();
           var time = d.createdAt ? new Date(d.createdAt.seconds * 1000).toLocaleString('id-ID') : 'Baru saja';
-          var sc = d.status === 'dikonfirmasi' ? 'status-dikonfirmasi' : d.status === 'ditolak' ? 'status-ditolak' : 'status-menunggu';
-          var sl = d.status === 'dikonfirmasi' ? '✅ Dikonfirmasi' : d.status === 'ditolak' ? '❌ Ditolak' : '⏳ Menunggu';
+          var sc = d.status === 'dikonfirmasi' ? 'status-dikonfirmasi' : d.status === 'ditolak' ? 'status-ditolak' : d.status === 'dibatalkan' ? 'status-dibatalkan' : 'status-menunggu';
+          var sl = d.status === 'dikonfirmasi' ? '✅ Dikonfirmasi' : d.status === 'ditolak' ? '❌ Ditolak' : d.status === 'dibatalkan' ? '🚫 Dibatalkan' : '⏳ Menunggu';
+          var ratingStr = d.rating ? '⭐'.repeat(d.rating) + (d.ulasan ? ' · "' + d.ulasan + '"' : '') : '';
           return '<div class="riwayat-item">' +
             '<div class="riwayat-icon">🚌</div>' +
             '<div class="riwayat-info">' +
               '<div class="riwayat-name">' + (d.paket || '—') + ' · Rp' + (d.totalBayar || 0).toLocaleString('id-ID') + '</div>' +
               '<div class="riwayat-detail">📧 ' + (d.email || '—') + ' · 🎮 ID: ' + (d.idPlayer || '—') + ' · ' + time + '</div>' +
+              (ratingStr ? '<div class="riwayat-rating">' + ratingStr + '</div>' : '') +
             '</div>' +
             '<div class="riwayat-status ' + sc + '">' + sl + '</div>' +
           '</div>';
@@ -469,6 +686,7 @@
       });
   }
 
+  // ===== HELPERS =====
   function setStep(n) {
     document.getElementById('sec1').style.display = n === 1 ? 'block' : 'none';
     document.getElementById('sec2').style.display = n === 2 ? 'block' : 'none';
