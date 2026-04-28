@@ -716,39 +716,39 @@
 
   function hapusSatu(id) {
     showConfirm('🗑️', 'HAPUS ORDER', 'Hapus data order ini? Tindakan tidak bisa dibatalkan.', 'red', function() {
-      db.collection('orders').doc(id).delete().then(function(){
-      allOrders = allOrders.filter(function(o){ return o.id!==id; });
-      selectedIds = selectedIds.filter(function(s){ return s!==id; });
-      updateStats(); renderOrders(); showToast('🗑 Data dihapus!');
-    }).catch(function(e){ showToast('❌ Gagal hapus!'); console.error(e); });
+      db.collection('orders').doc(id).delete().then(function() {
+        allOrders = allOrders.filter(function(o){ return o.id !== id; });
+        selectedIds = selectedIds.filter(function(s){ return s !== id; });
+        updateStats(); renderOrders(); showToast('🗑 Data dihapus!');
+      }).catch(function(e){ showToast('❌ Gagal hapus!'); console.error(e); });
     });
   }
 
   function hapusPilihan() {
     if(selectedIds.length===0){ showToast('⚠️ Pilih data dulu!'); return; }
     showConfirm('🗑️', 'HAPUS PILIHAN', 'Hapus ' + selectedIds.length + ' data yang dipilih?', 'red', function() {
-    var ids = selectedIds.slice();
-    var batch = db.batch();
-    ids.forEach(function(id){ batch.delete(db.collection('orders').doc(id)); });
-    batch.commit().then(function(){
-      allOrders = allOrders.filter(function(o){ return ids.indexOf(o.id)===-1; });
-      selectedIds = [];
-      updateStats(); renderOrders(); updateDeleteBtn();
-      showToast('🗑 '+ids.length+' data dihapus!');
-    }).catch(function(e){ showToast('❌ Gagal hapus!'); console.error(e); });
+      var ids = selectedIds.slice();
+      var batch = db.batch();
+      ids.forEach(function(id){ batch.delete(db.collection('orders').doc(id)); });
+      batch.commit().then(function() {
+        allOrders = allOrders.filter(function(o){ return ids.indexOf(o.id) === -1; });
+        selectedIds = [];
+        updateStats(); renderOrders(); updateDeleteBtn();
+        showToast('🗑 ' + ids.length + ' data dihapus!');
+      }).catch(function(e){ showToast('❌ Gagal hapus!'); console.error(e); });
     });
   }
 
   function hapusSemua() {
     if(allOrders.length===0){ showToast('⚠️ Tidak ada data!'); return; }
     showConfirm('⚠️', 'HAPUS SEMUA', 'Hapus SEMUA ' + allOrders.length + ' data order? Tindakan ini TIDAK BISA dibatalkan!', 'red', function() {
-    var batch = db.batch();
-    allOrders.forEach(function(o){ batch.delete(db.collection('orders').doc(o.id)); });
-    batch.commit().then(function(){
-      allOrders = []; selectedIds = [];
-      updateStats(); renderOrders(); updateDeleteBtn();
-      showToast('🗑 Semua data berhasil dihapus!');
-    }).catch(function(e){ showToast('❌ Gagal hapus semua!'); console.error(e); });
+      var batch = db.batch();
+      allOrders.forEach(function(o){ batch.delete(db.collection('orders').doc(o.id)); });
+      batch.commit().then(function() {
+        allOrders = []; selectedIds = [];
+        updateStats(); renderOrders(); updateDeleteBtn();
+        showToast('🗑 Semua data berhasil dihapus!');
+      }).catch(function(e){ showToast('❌ Gagal hapus semua!'); console.error(e); });
     });
   }
 
@@ -800,8 +800,9 @@
         document.querySelectorAll('.btn-hapus-promo').forEach(function(btn) {
           btn.addEventListener('click', function() {
             showConfirm('🗑️', 'HAPUS PROMO', 'Hapus kode promo ini?', 'red', function() {
-            db.collection('promoCodes').doc(btn.getAttribute('data-id')).delete()
-              .then(function(){ loadPromos(); showToast('🗑 Kode promo dihapus!'); });
+              db.collection('promoCodes').doc(btn.getAttribute('data-id')).delete()
+                .then(function(){ loadPromos(); showToast('🗑 Kode promo dihapus!'); })
+                .catch(function(e){ showToast('❌ Gagal hapus promo!'); console.error(e); });
             });
           });
         });
