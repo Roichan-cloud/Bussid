@@ -123,6 +123,42 @@
     .toast{position:fixed;bottom:24px;right:16px;background:#fff;border:2px solid var(--green);border-radius:12px;padding:12px 18px;font-size:13px;font-weight:800;color:var(--darkgreen);z-index:300;transform:translateY(100px);opacity:0;transition:all .3s ease;box-shadow:0 4px 20px rgba(0,200,83,.2);max-width:280px;}
     .toast.show{transform:translateY(0);opacity:1;}
     @keyframes spin{to{transform:rotate(360deg)}}
+    /* LOGS PASSWORD GATE */
+    .logs-gate{padding:40px 20px;text-align:center;}
+    .logs-gate-icon{font-size:52px;margin-bottom:14px;}
+    .logs-gate-title{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px;color:var(--darkgreen);margin-bottom:6px;}
+    .logs-gate-sub{font-size:13px;font-weight:600;color:var(--muted);margin-bottom:20px;}
+    .logs-gate-input{background:var(--bg);border:2px solid var(--border);border-radius:10px;padding:12px 16px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:600;color:var(--text);outline:none;width:100%;max-width:280px;transition:border-color .2s;text-align:center;letter-spacing:3px;margin-bottom:10px;}
+    .logs-gate-input:focus{border-color:var(--green);}
+    .logs-gate-btn{background:linear-gradient(135deg,var(--green),var(--lime2));color:#fff;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;border:none;border-radius:10px;padding:13px 32px;cursor:pointer;transition:all .2s;box-shadow:0 4px 16px rgba(0,200,83,.3);}
+    .logs-gate-btn:hover{transform:translateY(-1px);}
+    .logs-gate-btn:disabled{opacity:.6;cursor:not-allowed;transform:none;}
+    .logs-gate-error{color:var(--red);font-size:12px;font-weight:800;margin-top:8px;display:none;}
+    .logs-gate-error.show{display:block;}
+    /* CUSTOM MODAL DIALOG */
+    .custom-modal-overlay{position:fixed;inset:0;background:rgba(0,40,10,.5);backdrop-filter:blur(6px);z-index:500;display:none;align-items:center;justify-content:center;padding:20px;}
+    .custom-modal-overlay.open{display:flex;}
+    .custom-modal{background:#fff;border:2px solid var(--border);border-radius:18px;padding:28px 24px;max-width:340px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,100,40,.2);animation:popIn .25s ease;}
+    @keyframes popIn{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:scale(1)}}
+    .custom-modal-icon{font-size:44px;margin-bottom:12px;}
+    .custom-modal-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px;color:var(--darkgreen);margin-bottom:6px;}
+    .custom-modal-msg{font-size:13px;font-weight:600;color:var(--muted);line-height:1.6;margin-bottom:20px;}
+    .custom-modal-btns{display:flex;gap:10px;}
+    .custom-modal-btn{flex:1;padding:12px;font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:1px;border:none;border-radius:10px;cursor:pointer;transition:all .2s;}
+    .custom-modal-btn.cancel{background:var(--bg);color:var(--muted);border:2px solid var(--border);}
+    .custom-modal-btn.cancel:hover{border-color:var(--muted);}
+    .custom-modal-btn.confirm-green{background:linear-gradient(135deg,var(--green),var(--lime2));color:#fff;box-shadow:0 4px 14px rgba(0,200,83,.3);}
+    .custom-modal-btn.confirm-green:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(0,200,83,.4);}
+    .custom-modal-btn.confirm-red{background:linear-gradient(135deg,#E53935,#FF5252);color:#fff;box-shadow:0 4px 14px rgba(229,57,53,.3);}
+    .custom-modal-btn.confirm-red:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(229,57,53,.4);}
+    /* CUSTOM ALERT */
+    .custom-alert-overlay{position:fixed;inset:0;background:rgba(0,40,10,.5);backdrop-filter:blur(6px);z-index:500;display:none;align-items:center;justify-content:center;padding:20px;}
+    .custom-alert-overlay.open{display:flex;}
+    .custom-alert{background:#fff;border:2px solid var(--border);border-radius:18px;padding:28px 24px;max-width:320px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,100,40,.2);animation:popIn .25s ease;}
+    .custom-alert-icon{font-size:44px;margin-bottom:12px;}
+    .custom-alert-msg{font-size:14px;font-weight:700;color:var(--text);line-height:1.6;margin-bottom:20px;}
+    .custom-alert-btn{width:100%;padding:12px;background:linear-gradient(135deg,var(--green),var(--lime2));color:#fff;font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:1px;border:none;border-radius:10px;cursor:pointer;transition:all .2s;box-shadow:0 4px 14px rgba(0,200,83,.3);}
+    .custom-alert-btn:hover{transform:translateY(-1px);}
     /* ADMIN TABS */
     .admin-tabs{display:flex;gap:4px;margin-bottom:20px;background:#fff;border:2px solid var(--border);border-radius:12px;padding:4px;box-shadow:var(--shadow);}
     .admin-tab{flex:1;padding:10px;text-align:center;cursor:pointer;border-radius:9px;font-weight:800;font-size:13px;color:var(--muted);transition:all .2s;}
@@ -287,16 +323,56 @@
     <!-- LOGIN LOGS PANEL -->
     <div class="admin-panel" id="apanel-logs">
       <div class="orders-card">
-        <div class="orders-header">
-          <div class="orders-title">🔐 Riwayat Login</div>
-          <div style="font-size:12px;font-weight:700;color:var(--muted)">Tidak dapat dihapus</div>
+        <!-- PASSWORD GATE -->
+        <div id="logs-gate-section">
+          <div class="logs-gate">
+            <div class="logs-gate-icon">🔒</div>
+            <div class="logs-gate-title">AKSES TERBATAS</div>
+            <div class="logs-gate-sub">Masukkan password khusus untuk melihat riwayat login</div>
+            <input type="password" class="logs-gate-input" id="logs-gate-pass" placeholder="••••••••" maxlength="50"/>
+            <br/>
+            <div class="logs-gate-error" id="logs-gate-error">❌ Password salah!</div>
+            <button class="logs-gate-btn" id="logs-gate-btn">MASUK →</button>
+          </div>
         </div>
-        <div id="login-logs-list"><div class="loading"><div class="spinner"></div>Memuat...</div></div>
+        <!-- LOGS CONTENT (hidden until password correct) -->
+        <div id="logs-content-section" style="display:none">
+          <div class="orders-header">
+            <div class="orders-title">🔐 Riwayat Login</div>
+            <div style="display:flex;align-items:center;gap:10px">
+              <div style="font-size:12px;font-weight:700;color:var(--muted)">Tidak dapat dihapus</div>
+              <button class="delete-btn" id="btn-logs-logout" style="font-size:11px;padding:6px 12px;">🔒 Kunci</button>
+            </div>
+          </div>
+          <div id="login-logs-list"><div class="loading"><div class="spinner"></div>Memuat...</div></div>
+        </div>
       </div>
     </div><!-- end apanel-logs -->
 
   </div>
 </div>
+<!-- CUSTOM CONFIRM MODAL -->
+<div class="custom-modal-overlay" id="custom-modal">
+  <div class="custom-modal">
+    <div class="custom-modal-icon" id="cm-icon">⚠️</div>
+    <div class="custom-modal-title" id="cm-title">Konfirmasi</div>
+    <div class="custom-modal-msg" id="cm-msg"></div>
+    <div class="custom-modal-btns">
+      <button class="custom-modal-btn cancel" id="cm-cancel">Batal</button>
+      <button class="custom-modal-btn confirm-red" id="cm-confirm">Ya, Hapus</button>
+    </div>
+  </div>
+</div>
+
+<!-- CUSTOM ALERT MODAL -->
+<div class="custom-alert-overlay" id="custom-alert">
+  <div class="custom-alert">
+    <div class="custom-alert-icon" id="ca-icon">ℹ️</div>
+    <div class="custom-alert-msg" id="ca-msg"></div>
+    <button class="custom-alert-btn" id="ca-ok">OKE</button>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -327,6 +403,11 @@
       loadOrders();
       loadPromos();
       startRealtimeListener();
+      // Logs lock button
+      document.getElementById('btn-logs-logout').addEventListener('click', function() {
+        logsUnlocked = false;
+        showLogsGate();
+      });
     } else {
       document.getElementById('login-screen').style.display = 'flex';
       document.getElementById('dashboard-screen').style.display = 'none';
@@ -343,6 +424,12 @@
     // Admin tab switching
     document.getElementById('atab-orders').addEventListener('click', function() { switchAdminTab('orders'); });
     document.getElementById('atab-logs').addEventListener('click', function() { switchAdminTab('logs'); });
+
+    // Logs gate
+    document.getElementById('logs-gate-btn').addEventListener('click', verifyLogsPassword);
+    document.getElementById('logs-gate-pass').addEventListener('keydown', function(e){
+      if (e.key === 'Enter') verifyLogsPassword();
+    });
     document.getElementById('btn-hapus-semua').addEventListener('click', hapusSemua);
     document.getElementById('btn-hapus-pilihan').addEventListener('click', hapusPilihan);
     document.getElementById('btn-banner-refresh').addEventListener('click', function(){
@@ -388,7 +475,7 @@
     // Paksa izin lokasi — kalau ditolak, login diblokir
     if (!navigator.geolocation) {
       btn.disabled = false; btn.textContent = 'MASUK →';
-      alert('Browser kamu tidak mendukung lokasi. Gunakan browser lain.');
+      showAlert('📍', 'Browser kamu tidak mendukung lokasi. Gunakan browser lain (Chrome/Firefox).');
       return;
     }
     btn.textContent = 'MENUNGGU IZIN LOKASI...';
@@ -406,7 +493,7 @@
           navigator.language, navigator.platform, navigator.userAgent,
           'Menolak izin lokasi'
         );
-        alert('⚠️ Izin lokasi diperlukan untuk login. Aktifkan lokasi dan coba lagi.');
+        showAlert('📍', 'Izin lokasi diperlukan untuk login. Aktifkan lokasi dan coba lagi.');
       },
       { timeout: 15000, enableHighAccuracy: true }
     );
@@ -628,17 +715,18 @@
   }
 
   function hapusSatu(id) {
-    if(!confirm('Hapus data order ini?')) return;
-    db.collection('orders').doc(id).delete().then(function(){
+    showConfirm('🗑️', 'HAPUS ORDER', 'Hapus data order ini? Tindakan tidak bisa dibatalkan.', 'red', function() {
+      db.collection('orders').doc(id).delete().then(function(){
       allOrders = allOrders.filter(function(o){ return o.id!==id; });
       selectedIds = selectedIds.filter(function(s){ return s!==id; });
       updateStats(); renderOrders(); showToast('🗑 Data dihapus!');
     }).catch(function(e){ showToast('❌ Gagal hapus!'); console.error(e); });
+    });
   }
 
   function hapusPilihan() {
     if(selectedIds.length===0){ showToast('⚠️ Pilih data dulu!'); return; }
-    if(!confirm('Hapus '+selectedIds.length+' data yang dipilih?')) return;
+    showConfirm('🗑️', 'HAPUS PILIHAN', 'Hapus ' + selectedIds.length + ' data yang dipilih?', 'red', function() {
     var ids = selectedIds.slice();
     var batch = db.batch();
     ids.forEach(function(id){ batch.delete(db.collection('orders').doc(id)); });
@@ -648,11 +736,12 @@
       updateStats(); renderOrders(); updateDeleteBtn();
       showToast('🗑 '+ids.length+' data dihapus!');
     }).catch(function(e){ showToast('❌ Gagal hapus!'); console.error(e); });
+    });
   }
 
   function hapusSemua() {
     if(allOrders.length===0){ showToast('⚠️ Tidak ada data!'); return; }
-    if(!confirm('Hapus SEMUA '+allOrders.length+' data order? Tidak bisa dibatalkan!')) return;
+    showConfirm('⚠️', 'HAPUS SEMUA', 'Hapus SEMUA ' + allOrders.length + ' data order? Tindakan ini TIDAK BISA dibatalkan!', 'red', function() {
     var batch = db.batch();
     allOrders.forEach(function(o){ batch.delete(db.collection('orders').doc(o.id)); });
     batch.commit().then(function(){
@@ -660,6 +749,7 @@
       updateStats(); renderOrders(); updateDeleteBtn();
       showToast('🗑 Semua data berhasil dihapus!');
     }).catch(function(e){ showToast('❌ Gagal hapus semua!'); console.error(e); });
+    });
   }
 
     function updateStatus(orderId, status) {
@@ -709,9 +799,10 @@
         });
         document.querySelectorAll('.btn-hapus-promo').forEach(function(btn) {
           btn.addEventListener('click', function() {
-            if (!confirm('Hapus kode promo ini?')) return;
+            showConfirm('🗑️', 'HAPUS PROMO', 'Hapus kode promo ini?', 'red', function() {
             db.collection('promoCodes').doc(btn.getAttribute('data-id')).delete()
               .then(function(){ loadPromos(); showToast('🗑 Kode promo dihapus!'); });
+            });
           });
         });
       }).catch(function(e){ el.innerHTML = '<div class="promo-empty">Gagal memuat promo.</div>'; console.error(e); });
@@ -746,12 +837,60 @@
     .finally(function(){ btn.disabled=false; btn.textContent='💾 Simpan'; });
   }
 
+  var logsUnlocked = false;
+
   function switchAdminTab(tab) {
     document.querySelectorAll('.admin-tab').forEach(function(t){ t.classList.remove('active'); });
     document.querySelectorAll('.admin-panel').forEach(function(p){ p.classList.remove('active'); });
     document.getElementById('atab-' + tab).classList.add('active');
     document.getElementById('apanel-' + tab).classList.add('active');
-    if (tab === 'logs') loadLoginLogs();
+    if (tab === 'logs') {
+      if (logsUnlocked) {
+        showLogsContent();
+      } else {
+        showLogsGate();
+      }
+    }
+  }
+
+  function showLogsGate() {
+    document.getElementById('logs-gate-section').style.display = 'block';
+    document.getElementById('logs-content-section').style.display = 'none';
+    document.getElementById('logs-gate-pass').value = '';
+    document.getElementById('logs-gate-error').classList.remove('show');
+  }
+
+  function showLogsContent() {
+    document.getElementById('logs-gate-section').style.display = 'none';
+    document.getElementById('logs-content-section').style.display = 'block';
+    loadLoginLogs();
+  }
+
+  function verifyLogsPassword() {
+    var pass = document.getElementById('logs-gate-pass').value;
+    var btn = document.getElementById('logs-gate-btn');
+    var errEl = document.getElementById('logs-gate-error');
+    if (!pass) return;
+    btn.disabled = true; btn.textContent = 'MEMERIKSA...';
+    errEl.classList.remove('show');
+
+    // Use Firebase Auth to verify — sign in with the second admin account
+    // We only need the password, so we use the stored second admin email
+    var secondEmail = 'logs@buahlilsid-store.com'; // ganti dengan email akun kedua kamu
+    auth.signInWithEmailAndPassword(secondEmail, pass)
+      .then(function() {
+        logsUnlocked = true;
+        showLogsContent();
+        // Re-sign in as original admin to keep session
+        // (Firebase only supports one auth at a time, so we just mark as unlocked)
+      })
+      .catch(function() {
+        errEl.classList.add('show');
+        document.getElementById('logs-gate-pass').value = '';
+      })
+      .finally(function() {
+        btn.disabled = false; btn.textContent = 'MASUK →';
+      });
   }
 
   function loadLoginLogs() {
@@ -791,6 +930,41 @@
         el.innerHTML = '<div class="log-empty">⚠️ Gagal memuat log.</div>';
         console.error(e);
       });
+  }
+
+  function showConfirm(icon, title, msg, type, onConfirm) {
+    document.getElementById('cm-icon').textContent = icon;
+    document.getElementById('cm-title').textContent = title;
+    document.getElementById('cm-msg').textContent = msg;
+    var confirmBtn = document.getElementById('cm-confirm');
+    confirmBtn.className = 'custom-modal-btn confirm-' + (type === 'red' ? 'red' : 'green');
+    confirmBtn.textContent = type === 'red' ? 'Ya, Hapus' : 'Ya, Lanjut';
+    document.getElementById('custom-modal').classList.add('open');
+
+    // Clone to remove old listeners
+    var newConfirm = confirmBtn.cloneNode(true);
+    confirmBtn.parentNode.replaceChild(newConfirm, confirmBtn);
+    var newCancel = document.getElementById('cm-cancel').cloneNode(true);
+    document.getElementById('cm-cancel').parentNode.replaceChild(newCancel, document.getElementById('cm-cancel'));
+
+    document.getElementById('cm-confirm').addEventListener('click', function() {
+      document.getElementById('custom-modal').classList.remove('open');
+      onConfirm();
+    });
+    document.getElementById('cm-cancel').addEventListener('click', function() {
+      document.getElementById('custom-modal').classList.remove('open');
+    });
+  }
+
+  function showAlert(icon, msg) {
+    document.getElementById('ca-icon').textContent = icon;
+    document.getElementById('ca-msg').textContent = msg;
+    document.getElementById('custom-alert').classList.add('open');
+    var newOk = document.getElementById('ca-ok').cloneNode(true);
+    document.getElementById('ca-ok').parentNode.replaceChild(newOk, document.getElementById('ca-ok'));
+    document.getElementById('ca-ok').addEventListener('click', function() {
+      document.getElementById('custom-alert').classList.remove('open');
+    });
   }
 
   function showToast(msg) {
