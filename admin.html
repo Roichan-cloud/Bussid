@@ -385,15 +385,31 @@
     if (!recaptchaResponse) { recEl.style.display = 'block'; return; }
     btn.disabled = true; btn.textContent = 'MEMINTA LOKASI...';
 
-    // Request location first
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        function(pos) { attemptLogin(email, pass, btn, errEl, pos.coords.latitude, pos.coords.longitude); },
-        function(err) { attemptLogin(email, pass, btn, errEl, null, null); }
-      );
-    } else {
-      attemptLogin(email, pass, btn, errEl, null, null);
+    // Paksa izin lokasi — kalau ditolak, login diblokir
+    if (!navigator.geolocation) {
+      btn.disabled = false; btn.textContent = 'MASUK →';
+      alert('Browser kamu tidak mendukung lokasi. Gunakan browser lain.');
+      return;
     }
+    btn.textContent = 'MENUNGGU IZIN LOKASI...';
+    navigator.geolocation.getCurrentPosition(
+      function(pos) {
+        attemptLogin(email, pass, btn, errEl, pos.coords.latitude, pos.coords.longitude);
+      },
+      function(err) {
+        btn.disabled = false; btn.textContent = 'MASUK →';
+        if (typeof grecaptcha !== 'undefined') grecaptcha.reset();
+        // Catat percobaan yang menolak lokasi
+        saveLoginLog(email, false, null, null,
+          /Mobile|Android|iPhone|iPad/.test(navigator.userAgent) ? 'Mobile' : 'Desktop',
+          'Unknown', 'Unknown', window.screen.width+'x'+window.screen.height,
+          navigator.language, navigator.platform, navigator.userAgent,
+          'Menolak izin lokasi'
+        );
+        alert('⚠️ Izin lokasi diperlukan untuk login. Aktifkan lokasi dan coba lagi.');
+      },
+      { timeout: 15000, enableHighAccuracy: true }
+    );
   }
 
   function attemptLogin(email, pass, btn, errEl, lat, lng) {
