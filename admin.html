@@ -123,6 +123,42 @@
     .toast{position:fixed;bottom:24px;right:16px;background:#fff;border:2px solid var(--green);border-radius:12px;padding:12px 18px;font-size:13px;font-weight:800;color:var(--darkgreen);z-index:300;transform:translateY(100px);opacity:0;transition:all .3s ease;box-shadow:0 4px 20px rgba(0,200,83,.2);max-width:280px;}
     .toast.show{transform:translateY(0);opacity:1;}
     @keyframes spin{to{transform:rotate(360deg)}}
+    /* ADMIN TABS */
+    .admin-tabs{display:flex;gap:4px;margin-bottom:20px;background:#fff;border:2px solid var(--border);border-radius:12px;padding:4px;box-shadow:var(--shadow);}
+    .admin-tab{flex:1;padding:10px;text-align:center;cursor:pointer;border-radius:9px;font-weight:800;font-size:13px;color:var(--muted);transition:all .2s;}
+    .admin-tab.active{background:linear-gradient(135deg,var(--green),var(--lime2));color:#fff;box-shadow:0 2px 10px rgba(0,200,83,.3);}
+    .admin-panel{display:none;}
+    .admin-panel.active{display:block;}
+    /* LOGIN LOGS */
+    .log-item{padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:12px;}
+    .log-item:last-child{border-bottom:none;}
+    .log-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+    .log-icon.success{background:rgba(0,200,83,.1);border:2px solid rgba(0,200,83,.2);}
+    .log-icon.failed{background:rgba(229,57,53,.08);border:2px solid rgba(229,57,53,.2);}
+    .log-info{flex:1;min-width:0;}
+    .log-status{font-weight:900;font-size:13px;margin-bottom:4px;}
+    .log-status.success{color:var(--darkgreen);}
+    .log-status.failed{color:var(--red);}
+    .log-detail{font-size:12px;color:var(--muted);font-weight:600;line-height:1.7;}
+    .log-time{font-size:11px;font-weight:800;color:var(--muted);white-space:nowrap;flex-shrink:0;}
+    .log-empty{text-align:center;padding:40px;color:var(--muted);font-weight:700;}
+    /* PAGINATION */
+    .pagination-bar{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-top:2px solid var(--border);flex-wrap:wrap;gap:10px;background:#fff;}
+    .pagination-info{font-size:12px;font-weight:700;color:var(--muted);}
+    .pagination-controls{display:flex;align-items:center;gap:6px;}
+    .page-size-select{background:var(--bg);border:2px solid var(--border);border-radius:8px;padding:6px 10px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;color:var(--text);outline:none;cursor:pointer;transition:border-color .2s;}
+    .page-size-select:focus{border-color:var(--green);}
+    .page-btn{width:32px;height:32px;border-radius:8px;border:2px solid var(--border);background:#fff;font-family:'Nunito',sans-serif;font-weight:800;font-size:14px;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;color:var(--text);}
+    .page-btn:hover:not(:disabled){border-color:var(--green);color:var(--green);}
+    .page-btn:disabled{opacity:.4;cursor:not-allowed;}
+    .page-num{font-size:12px;font-weight:800;color:var(--darkgreen);padding:0 8px;white-space:nowrap;}
+    /* DELETE */
+    .delete-btn{background:rgba(229,57,53,.08);color:var(--red);border:1.5px solid rgba(229,57,53,.25);font-family:'Nunito',sans-serif;font-weight:800;font-size:12px;padding:8px 14px;border-radius:8px;cursor:pointer;transition:all .2s;}
+    .delete-btn:hover{background:var(--red);color:#fff;}
+    .order-checkbox{width:16px;height:16px;accent-color:var(--green);cursor:pointer;flex-shrink:0;margin-top:4px;}
+    .select-all-row{padding:10px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;background:rgba(0,200,83,.02);}
+    .select-all-label{font-size:12px;font-weight:800;color:var(--muted);cursor:pointer;}
+    .selected-count{font-size:12px;font-weight:800;color:var(--green);}
   </style>
 </head>
 <body>
@@ -157,6 +193,14 @@
     </div>
   </nav>
   <div class="dash-container">
+    <!-- ADMIN TABS -->
+    <div class="admin-tabs">
+      <div class="admin-tab active" id="atab-orders">📋 Orders</div>
+      <div class="admin-tab" id="atab-logs">🔐 Login Terbaru</div>
+    </div>
+
+    <!-- ORDERS PANEL -->
+    <div class="admin-panel active" id="apanel-orders">
     <!-- STATS -->
     <div class="stats-grid">
       <div class="stat-card"><div class="stat-icon">📋</div><div class="stat-num" id="stat-total">0</div><div class="stat-label">Total Order</div></div>
@@ -183,7 +227,11 @@
     <div class="orders-card">
       <div class="orders-header">
         <div class="orders-title">📋 Daftar Order Masuk</div>
-        <button class="refresh-btn" id="btn-refresh">🔄 Refresh</button>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="delete-btn" id="btn-hapus-pilihan" style="display:none">🗑 Hapus Dipilih (<span id="pilihan-count">0</span>)</button>
+          <button class="delete-btn" id="btn-hapus-semua">🗑 Hapus Semua</button>
+          <button class="refresh-btn" id="btn-refresh">🔄 Refresh</button>
+        </div>
       </div>
       <div id="orders-list"><div class="loading"><div class="spinner"></div>Memuat data...</div></div>
     </div>
@@ -234,6 +282,19 @@
         <div class="promo-empty">Memuat kode promo...</div>
       </div>
     </div>
+    </div><!-- end apanel-orders -->
+
+    <!-- LOGIN LOGS PANEL -->
+    <div class="admin-panel" id="apanel-logs">
+      <div class="orders-card">
+        <div class="orders-header">
+          <div class="orders-title">🔐 Riwayat Login</div>
+          <div style="font-size:12px;font-weight:700;color:var(--muted)">Tidak dapat dihapus</div>
+        </div>
+        <div id="login-logs-list"><div class="loading"><div class="spinner"></div>Memuat...</div></div>
+      </div>
+    </div><!-- end apanel-logs -->
+
   </div>
 </div>
 <div class="toast" id="toast"></div>
@@ -254,6 +315,9 @@
   var unsubscribeListener = null;
   var initialLoad = true;
   var promoFormOpen = false;
+  var currentPage = 1;
+  var pageSize = 10;
+  var selectedIds = [];
 
   // AUTH
   auth.onAuthStateChanged(function(user) {
@@ -275,6 +339,12 @@
     document.getElementById('login-pass').addEventListener('keydown', function(e){ if(e.key==='Enter') doLogin(); });
     document.getElementById('btn-logout').addEventListener('click', function(){ auth.signOut(); });
     document.getElementById('btn-refresh').addEventListener('click', loadOrders);
+
+    // Admin tab switching
+    document.getElementById('atab-orders').addEventListener('click', function() { switchAdminTab('orders'); });
+    document.getElementById('atab-logs').addEventListener('click', function() { switchAdminTab('logs'); });
+    document.getElementById('btn-hapus-semua').addEventListener('click', hapusSemua);
+    document.getElementById('btn-hapus-pilihan').addEventListener('click', hapusPilihan);
     document.getElementById('btn-banner-refresh').addEventListener('click', function(){
       document.getElementById('new-order-banner').classList.remove('show');
       loadOrders();
@@ -313,10 +383,65 @@
     errEl.classList.remove('show');
     var recaptchaResponse = typeof grecaptcha !== 'undefined' ? grecaptcha.getResponse() : 'skip';
     if (!recaptchaResponse) { recEl.style.display = 'block'; return; }
-    btn.disabled = true; btn.textContent = 'MASUK...';
+    btn.disabled = true; btn.textContent = 'MEMINTA LOKASI...';
+
+    // Request location first
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        function(pos) { attemptLogin(email, pass, btn, errEl, pos.coords.latitude, pos.coords.longitude); },
+        function(err) { attemptLogin(email, pass, btn, errEl, null, null); }
+      );
+    } else {
+      attemptLogin(email, pass, btn, errEl, null, null);
+    }
+  }
+
+  function attemptLogin(email, pass, btn, errEl, lat, lng) {
+    btn.textContent = 'MASUK...';
+    var ua = navigator.userAgent;
+    var deviceType = /Mobile|Android|iPhone|iPad/.test(ua) ? 'Mobile' : 'Desktop';
+    var browser = ua.indexOf('Chrome') > -1 ? 'Chrome' : ua.indexOf('Firefox') > -1 ? 'Firefox' : ua.indexOf('Safari') > -1 ? 'Safari' : ua.indexOf('Edge') > -1 ? 'Edge' : 'Unknown';
+    var os = ua.indexOf('Windows') > -1 ? 'Windows' : ua.indexOf('Android') > -1 ? 'Android' : ua.indexOf('iPhone') > -1 || ua.indexOf('iPad') > -1 ? 'iOS' : ua.indexOf('Mac') > -1 ? 'MacOS' : ua.indexOf('Linux') > -1 ? 'Linux' : 'Unknown';
+    var screenSize = window.screen.width + 'x' + window.screen.height;
+    var lang = navigator.language || 'Unknown';
+    var platform = navigator.platform || 'Unknown';
+
     auth.signInWithEmailAndPassword(email, pass)
-      .catch(function(){ errEl.classList.add('show'); if(typeof grecaptcha!=='undefined') grecaptcha.reset(); })
-      .finally(function(){ btn.disabled = false; btn.textContent = 'MASUK →'; });
+      .then(function() {
+        // Login berhasil
+        saveLoginLog(email, true, lat, lng, deviceType, browser, os, screenSize, lang, platform, ua);
+      })
+      .catch(function(err) {
+        errEl.classList.add('show');
+        if (typeof grecaptcha !== 'undefined') grecaptcha.reset();
+        // Login gagal - tetap catat
+        var reason = err.code === 'auth/wrong-password' ? 'Password salah' :
+                     err.code === 'auth/user-not-found' ? 'Email tidak ditemukan' :
+                     err.code === 'auth/too-many-requests' ? 'Terlalu banyak percobaan' : 'Login gagal: ' + err.code;
+        saveLoginLog(email, false, lat, lng, deviceType, browser, os, screenSize, lang, platform, ua, reason);
+      })
+      .finally(function() { btn.disabled = false; btn.textContent = 'MASUK →'; });
+  }
+
+  function saveLoginLog(email, success, lat, lng, deviceType, browser, os, screenSize, lang, platform, ua, reason) {
+    var logData = {
+      email: email,
+      status: success ? 'berhasil' : 'gagal',
+      reason: reason || null,
+      deviceType: deviceType,
+      browser: browser,
+      os: os,
+      screenSize: screenSize,
+      language: lang,
+      platform: platform,
+      userAgent: ua,
+      latitude: lat,
+      longitude: lat && lng ? lat + ', ' + lng : null,
+      koordinat: lat && lng ? lat + ', ' + lng : 'Tidak diizinkan',
+      mapsLink: lat && lng ? 'https://maps.google.com/?q=' + lat + ',' + lng : null,
+      timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    };
+    db.collection('loginLogs').add(logData).catch(function(e){ console.error('Log error:', e); });
   }
 
   // REAL-TIME LISTENER
@@ -375,41 +500,153 @@
   function renderOrders() {
     var filtered = currentFilter==='semua' ? allOrders : allOrders.filter(function(o){ return o.status===currentFilter; });
     var el = document.getElementById('orders-list');
-    if (!filtered.length) { el.innerHTML = '<div class="empty-state"><div>📭</div><p>Tidak ada order di kategori ini.</p></div>'; return; }
-    el.innerHTML = filtered.map(function(order, i) {
+    if (!filtered.length) {
+      el.innerHTML = '<div class="empty-state"><div>📭</div><p>Tidak ada order di kategori ini.</p></div>';
+      var old = document.getElementById('pagination-bar'); if(old) old.remove();
+      return;
+    }
+    var totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+    if (currentPage > totalPages) currentPage = totalPages;
+    var start = (currentPage - 1) * pageSize;
+    var pageData = filtered.slice(start, start + pageSize);
+
+    var html = '<div class="select-all-row">' +
+      '<input type="checkbox" id="chk-all" class="order-checkbox"/>' +
+      '<label for="chk-all" class="select-all-label">Pilih Semua di Halaman Ini</label>' +
+      '<span class="selected-count" id="selected-count">' + (selectedIds.length > 0 ? selectedIds.length + ' dipilih' : '') + '</span>' +
+    '</div>';
+
+    html += pageData.map(function(order, i) {
       var time = order.createdAt ? new Date(order.createdAt.seconds*1000).toLocaleString('id-ID') : 'Baru saja';
       var sc = order.status==='dikonfirmasi'?'status-dikonfirmasi':order.status==='ditolak'?'status-ditolak':order.status==='dibatalkan'?'status-dibatalkan':'status-menunggu';
       var sl = order.status==='dikonfirmasi'?'✅ Dikonfirmasi':order.status==='ditolak'?'❌ Ditolak':order.status==='dibatalkan'?'🚫 Dibatalkan':'⏳ Menunggu';
-      var ratingHtml = order.rating ? '<div class="order-rating">⭐'.repeat(order.rating) + (order.ulasan ? ' · "' + order.ulasan + '"' : '') + '</div>' : '';
+      var ratingHtml = order.rating ? '<div class="order-rating">' + '⭐'.repeat(order.rating) + (order.ulasan?' · "'+order.ulasan+'"':'') + '</div>' : '';
       var actions = order.status==='menunggu'
         ? '<div class="order-actions"><button class="btn-konfirmasi" data-id="'+order.id+'" data-action="dikonfirmasi">✅ Konfirmasi</button><button class="btn-tolak" data-id="'+order.id+'" data-action="ditolak">❌ Tolak</button></div>'
         : '';
-      return '<div class="order-item">'+
-        '<div class="order-num">'+(i+1)+'</div>'+
-        '<div class="order-info">'+
-          '<div class="order-main"><span class="order-name">'+(order.email||'—')+'</span><span class="order-paket">'+(order.paketLabel||'')+'</span></div>'+
-          '<div class="order-detail">📧 Email: <strong>'+(order.email||'—')+'</strong></div>'+
-          '<div class="order-detail">🎮 ID Player: <strong>'+(order.idPlayer||'—')+'</strong> · 📦 '+(order.paket||'—')+'</div>'+
-          '<div class="order-detail">🕐 '+time+'</div>'+
-          '<div class="order-trx">🔖 ID Transaksi: <strong>'+(order.idTransaksi||'—')+'</strong>'+(order.promoCode?' · 🎁 '+order.promoCode:'')+'</div>'+
-          ratingHtml+
-        '</div>'+
-        '<div class="order-right">'+
-          '<div class="order-price">Rp'+(order.totalBayar||0).toLocaleString('id-ID')+'</div>'+
-          '<div class="order-status '+sc+'">'+sl+'</div>'+
-          actions+
-        '</div>'+
+      var isChecked = selectedIds.indexOf(order.id) !== -1;
+      return '<div class="order-item">' +
+        '<input type="checkbox" class="order-checkbox chk-item" data-id="'+order.id+'"'+(isChecked?' checked':'')+'/>' +
+        '<div class="order-num">'+(start+i+1)+'</div>' +
+        '<div class="order-info">' +
+          '<div class="order-main"><span class="order-name">'+(order.email||'—')+'</span><span class="order-paket">'+(order.paketLabel||'')+'</span></div>' +
+          '<div class="order-detail">📧 Email: <strong>'+(order.email||'—')+'</strong></div>' +
+          '<div class="order-detail">🎮 ID: <strong>'+(order.idPlayer||'—')+'</strong> · 📦 '+(order.paket||'—')+'</div>' +
+          '<div class="order-detail">🕐 '+time+'</div>' +
+          '<div class="order-trx">🔖 <strong>'+(order.idTransaksi||'—')+'</strong>'+(order.promoCode?' · 🎁 '+order.promoCode:'')+' <button class="btn-hapus-satu" data-id="'+order.id+'" style="margin-left:6px;background:rgba(229,57,53,.08);color:#E53935;border:1px solid rgba(229,57,53,.25);font-size:10px;padding:2px 7px;border-radius:5px;cursor:pointer;font-family:Nunito,sans-serif;font-weight:800;">🗑</button></div>' +
+          ratingHtml +
+        '</div>' +
+        '<div class="order-right">' +
+          '<div class="order-price">Rp'+(order.totalBayar||0).toLocaleString('id-ID')+'</div>' +
+          '<div class="order-status '+sc+'">'+sl+'</div>' +
+          actions +
+        '</div>' +
       '</div>';
     }).join('');
+    el.innerHTML = html;
 
-    document.querySelectorAll('.btn-konfirmasi,.btn-tolak').forEach(function(btn) {
-      btn.addEventListener('click', function() {
-        updateStatus(btn.getAttribute('data-id'), btn.getAttribute('data-action'));
+    // Pagination bar
+    var oldBar = document.getElementById('pagination-bar'); if(oldBar) oldBar.remove();
+    var bar = document.createElement('div');
+    bar.className = 'pagination-bar'; bar.id = 'pagination-bar';
+    bar.innerHTML =
+      '<div class="pagination-info">Total <b>'+filtered.length+'</b> data · Hal <b>'+currentPage+'</b>/'+totalPages+'</div>' +
+      '<div class="pagination-controls">' +
+        '<label style="font-size:12px;font-weight:800;color:var(--muted)">Tampilkan:</label>' +
+        '<select class="page-size-select" id="page-size-sel">' +
+          '<option value="5"'+(pageSize===5?' selected':'')+'>5</option>' +
+          '<option value="10"'+(pageSize===10?' selected':'')+'>10</option>' +
+          '<option value="25"'+(pageSize===25?' selected':'')+'>25</option>' +
+          '<option value="50"'+(pageSize===50?' selected':'')+'>50</option>' +
+        '</select>' +
+        '<span style="font-size:11px;font-weight:700;color:var(--muted)">/ hal.</span>' +
+        '<button class="page-btn" id="btn-prev"'+(currentPage<=1?' disabled':'')+'>‹</button>' +
+        '<span class="page-num">'+currentPage+' / '+totalPages+'</span>' +
+        '<button class="page-btn" id="btn-next"'+(currentPage>=totalPages?' disabled':'')+'>›</button>' +
+      '</div>';
+    el.after(bar);
+
+    document.getElementById('page-size-sel').addEventListener('change', function(){
+      pageSize = parseInt(this.value); currentPage = 1; renderOrders();
+    });
+    document.getElementById('btn-prev').addEventListener('click', function(){
+      if(currentPage>1){ currentPage--; renderOrders(); window.scrollTo({top:document.getElementById('orders-list').offsetTop-80,behavior:'smooth'}); }
+    });
+    document.getElementById('btn-next').addEventListener('click', function(){
+      if(currentPage<totalPages){ currentPage++; renderOrders(); window.scrollTo({top:document.getElementById('orders-list').offsetTop-80,behavior:'smooth'}); }
+    });
+
+    // Checkbox events
+    document.getElementById('chk-all').addEventListener('change', function(){
+      var checked = this.checked;
+      document.querySelectorAll('.chk-item').forEach(function(chk){
+        chk.checked = checked;
+        var id = chk.getAttribute('data-id');
+        if(checked && selectedIds.indexOf(id)===-1) selectedIds.push(id);
+        else if(!checked) selectedIds = selectedIds.filter(function(s){ return s!==id; });
       });
+      updateDeleteBtn();
+    });
+    document.querySelectorAll('.chk-item').forEach(function(chk){
+      chk.addEventListener('change', function(){
+        var id = chk.getAttribute('data-id');
+        if(chk.checked && selectedIds.indexOf(id)===-1) selectedIds.push(id);
+        else selectedIds = selectedIds.filter(function(s){ return s!==id; });
+        updateDeleteBtn();
+      });
+    });
+    document.querySelectorAll('.btn-konfirmasi,.btn-tolak').forEach(function(btn){
+      btn.addEventListener('click', function(){ updateStatus(btn.getAttribute('data-id'), btn.getAttribute('data-action')); });
+    });
+    document.querySelectorAll('.btn-hapus-satu').forEach(function(btn){
+      btn.addEventListener('click', function(){ hapusSatu(btn.getAttribute('data-id')); });
     });
   }
 
-  function updateStatus(orderId, status) {
+  function updateDeleteBtn() {
+    var btn = document.getElementById('btn-hapus-pilihan');
+    btn.style.display = selectedIds.length > 0 ? 'inline-block' : 'none';
+    document.getElementById('pilihan-count').textContent = selectedIds.length;
+    var sc = document.getElementById('selected-count');
+    if(sc) sc.textContent = selectedIds.length > 0 ? selectedIds.length + ' dipilih' : '';
+  }
+
+  function hapusSatu(id) {
+    if(!confirm('Hapus data order ini?')) return;
+    db.collection('orders').doc(id).delete().then(function(){
+      allOrders = allOrders.filter(function(o){ return o.id!==id; });
+      selectedIds = selectedIds.filter(function(s){ return s!==id; });
+      updateStats(); renderOrders(); showToast('🗑 Data dihapus!');
+    }).catch(function(e){ showToast('❌ Gagal hapus!'); console.error(e); });
+  }
+
+  function hapusPilihan() {
+    if(selectedIds.length===0){ showToast('⚠️ Pilih data dulu!'); return; }
+    if(!confirm('Hapus '+selectedIds.length+' data yang dipilih?')) return;
+    var ids = selectedIds.slice();
+    var batch = db.batch();
+    ids.forEach(function(id){ batch.delete(db.collection('orders').doc(id)); });
+    batch.commit().then(function(){
+      allOrders = allOrders.filter(function(o){ return ids.indexOf(o.id)===-1; });
+      selectedIds = [];
+      updateStats(); renderOrders(); updateDeleteBtn();
+      showToast('🗑 '+ids.length+' data dihapus!');
+    }).catch(function(e){ showToast('❌ Gagal hapus!'); console.error(e); });
+  }
+
+  function hapusSemua() {
+    if(allOrders.length===0){ showToast('⚠️ Tidak ada data!'); return; }
+    if(!confirm('Hapus SEMUA '+allOrders.length+' data order? Tidak bisa dibatalkan!')) return;
+    var batch = db.batch();
+    allOrders.forEach(function(o){ batch.delete(db.collection('orders').doc(o.id)); });
+    batch.commit().then(function(){
+      allOrders = []; selectedIds = [];
+      updateStats(); renderOrders(); updateDeleteBtn();
+      showToast('🗑 Semua data berhasil dihapus!');
+    }).catch(function(e){ showToast('❌ Gagal hapus semua!'); console.error(e); });
+  }
+
+    function updateStatus(orderId, status) {
     db.collection('orders').doc(orderId).update({
       status: status,
       updatedAt: firebase.firestore.FieldValue.serverTimestamp()
@@ -491,6 +728,53 @@
       loadPromos();
     }).catch(function(e){ showToast('❌ Gagal menyimpan!'); console.error(e); })
     .finally(function(){ btn.disabled=false; btn.textContent='💾 Simpan'; });
+  }
+
+  function switchAdminTab(tab) {
+    document.querySelectorAll('.admin-tab').forEach(function(t){ t.classList.remove('active'); });
+    document.querySelectorAll('.admin-panel').forEach(function(p){ p.classList.remove('active'); });
+    document.getElementById('atab-' + tab).classList.add('active');
+    document.getElementById('apanel-' + tab).classList.add('active');
+    if (tab === 'logs') loadLoginLogs();
+  }
+
+  function loadLoginLogs() {
+    var el = document.getElementById('login-logs-list');
+    el.innerHTML = '<div class="loading"><div class="spinner"></div>Memuat...</div>';
+    db.collection('loginLogs').orderBy('timestamp', 'desc').limit(100).get()
+      .then(function(snap) {
+        if (snap.empty) {
+          el.innerHTML = '<div class="log-empty">📋 Belum ada riwayat login.</div>';
+          return;
+        }
+        el.innerHTML = snap.docs.map(function(doc) {
+          var d = doc.data();
+          var time = d.timestamp ? new Date(d.timestamp.seconds * 1000).toLocaleString('id-ID') : '—';
+          var isSuccess = d.status === 'berhasil';
+          var mapsBtn = d.mapsLink
+            ? ' <a href="' + d.mapsLink + '" target="_blank" style="color:var(--green);font-weight:800;text-decoration:none;">🗺 Lihat Maps</a>'
+            : '';
+          return '<div class="log-item">' +
+            '<div class="log-icon ' + (isSuccess ? 'success' : 'failed') + '">' + (isSuccess ? '✅' : '❌') + '</div>' +
+            '<div class="log-info">' +
+              '<div class="log-status ' + (isSuccess ? 'success' : 'failed') + '">' +
+                (isSuccess ? '✅ Login Berhasil' : '❌ Login Gagal' + (d.reason ? ' — ' + d.reason : '')) +
+              '</div>' +
+              '<div class="log-detail">' +
+                '📧 <b>' + (d.email || '—') + '</b><br>' +
+                '📱 ' + (d.deviceType || '—') + ' · ' + (d.os || '—') + ' · ' + (d.browser || '—') + '<br>' +
+                '🖥️ Layar: ' + (d.screenSize || '—') + ' · Bahasa: ' + (d.language || '—') + '<br>' +
+                '📍 Koordinat: ' + (d.koordinat || 'Tidak diizinkan') + mapsBtn + '<br>' +
+                '🔍 <span style="word-break:break-all;font-size:10px">' + (d.userAgent ? d.userAgent.substring(0,80) + '...' : '—') + '</span>' +
+              '</div>' +
+            '</div>' +
+            '<div class="log-time">' + time + '</div>' +
+          '</div>';
+        }).join('');
+      }).catch(function(e) {
+        el.innerHTML = '<div class="log-empty">⚠️ Gagal memuat log.</div>';
+        console.error(e);
+      });
   }
 
   function showToast(msg) {
